@@ -23,7 +23,7 @@ namespace CRUD_API.Controllers
 
             var seleccustomers = customers.Select(c=> new CustomerDTO
             {
-               Id=c.Id,
+              
                FirstName=c.FirstName,
                LastName=c.LastName,
                Email=c.Email,
@@ -56,9 +56,9 @@ namespace CRUD_API.Controllers
                 PhoneNumber = customerdto.PhoneNumber
             };
             
-            _aPIContex.Add(customerdto);
+            _aPIContex.Add(customerdb);
            _aPIContex.SaveChanges();
-            return Ok(customerdto.Id);
+            return Ok(customerdto);
         }
 
 
@@ -93,3 +93,5 @@ namespace CRUD_API.Controllers
 
     }
 }
+
+

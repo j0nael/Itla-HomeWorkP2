@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.OpenApi;
+
 using Microsoft.EntityFrameworkCore;
+using tallermecanico.infretruture.DBContex;
+
 
 namespace CRUD_API
 
@@ -10,7 +12,7 @@ namespace CRUD_API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.Services.AddDbContext<DBContex.CrudAPIContex>(options =>
+            builder.Services.AddDbContext<CrudAPIContex>(options =>
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });

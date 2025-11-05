@@ -1,8 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CRUD_API.Model.Entyties;
-using System.ComponentModel;
-using CRUD_API.DBContex;
-using CRUD_API.DTO;
+using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.DBContex;
+using tallermecanico.aplication.DTOs;
 
 namespace CRUD_API.Controllers
 {
@@ -13,7 +12,7 @@ namespace CRUD_API.Controllers
         private readonly CrudAPIContex _aPIContex;
         public CustomerController(CrudAPIContex aPIContex)
         {
-            _aPIContex= aPIContex;
+            _aPIContex = aPIContex;
         }
         [HttpGet]
         public IActionResult GetAllCustomers()
@@ -21,14 +20,14 @@ namespace CRUD_API.Controllers
             var customers = _aPIContex.Customers.ToList();
             var list = new List<CustomerDTO>();
 
-            var seleccustomers = customers.Select(c=> new CustomerDTO
+            var seleccustomers = customers.Select(c => new CustomerDTO
             {
-              
-               FirstName=c.FirstName,
-               LastName=c.LastName,
-               Email=c.Email,
-               PhoneNumber=c.PhoneNumber
-               
+
+                FirstName = c.FirstName,
+                LastName = c.LastName,
+                Email = c.Email,
+                PhoneNumber = c.PhoneNumber
+
 
             }).ToList();
             return Ok(seleccustomers);
@@ -47,7 +46,7 @@ namespace CRUD_API.Controllers
         [HttpPost]
         public IActionResult CreateCustomer([FromBody] CustomerDTO customerdto)
         {
-            var customerdb = new Customer
+            var customerdb = new CustomerModel
             {
 
                 FirstName = customerdto.FirstName,
@@ -55,9 +54,9 @@ namespace CRUD_API.Controllers
                 Email = customerdto.Email,
                 PhoneNumber = customerdto.PhoneNumber
             };
-            
+
             _aPIContex.Add(customerdb);
-           _aPIContex.SaveChanges();
+            _aPIContex.SaveChanges();
             return Ok(customerdto);
         }
 
@@ -79,10 +78,10 @@ namespace CRUD_API.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteCustomer(int id ,[FromBody]CustomerDTO customerdto)
+        public IActionResult DeleteCustomer(int id, [FromBody] CustomerDTO customerdto)
         {
             var customer = _aPIContex.Customers.FirstOrDefault(c => c.Id == id);
-            if (customer == null) 
+            if (customer == null)
             {
                 return NotFound($"Cliente con id:{id} no encontrado");
             }

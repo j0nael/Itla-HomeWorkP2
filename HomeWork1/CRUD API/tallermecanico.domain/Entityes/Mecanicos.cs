@@ -13,15 +13,6 @@ namespace tallermecanico.domain.Entityes
         public string FirstName { get; set; }
         public string Specialty { get; set; }
 
-        public List<Repair>? Repairs { get; set; }
-
-        public Mechanic(int mechanicId, string firstName, string specialty)
-        {
-            MechanicId = mechanicId;
-            FirstName = firstName;
-            Specialty = specialty;
-        }
-
-        public Mechanic() { }
+       
     }
 }

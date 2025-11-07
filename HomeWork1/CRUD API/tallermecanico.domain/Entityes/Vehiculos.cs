@@ -21,26 +21,6 @@ namespace tallermecanico.domain.Entityes
 
         public int? InvoiceId { get; set; }
 
-        public Invoice? Invoice { get; set; }
-
-        public Customer? Customer { get; set; }
-
-        public Seller? Seller { get; set; }
-
-        public List<Repair>? Repairs { get; set; }
-
-        public Vehicle() { }
-
-        public Vehicle(int vehicleId,string licensePlate, string brand, string model, string color, int year,int customerId)
-        {
-            VehicleId = vehicleId;
-            LicensePlate = licensePlate;
-            Brand = brand;
-            Model = model;
-            Color = color;
-            Year = year;
-            CustomerId = customerId;
-
-        }
+       
     }
 }

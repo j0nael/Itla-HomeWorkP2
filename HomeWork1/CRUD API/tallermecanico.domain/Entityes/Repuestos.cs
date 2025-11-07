@@ -17,19 +17,6 @@ namespace tallermecanico.domain.Entityes
         public DateTime EntryDate { get; set; }
 
        
-        public List<SaleDetail> SaleDetails { get; set; } = new List<SaleDetail>();
-
-        public SparePart() { }
-
-        public SparePart(int sparePartId, string name, int quantity, double unitPrice, double wholesalePrice, DateTime entryDate)
-        {
-            SparePartId = sparePartId;
-            Name = name;
-            Quantity = quantity;
-            InitialQuantity = quantity;
-            UnitPrice = unitPrice;
-            WholesalePrice = wholesalePrice;
-            EntryDate = entryDate;
-        }
+       
     }
 }

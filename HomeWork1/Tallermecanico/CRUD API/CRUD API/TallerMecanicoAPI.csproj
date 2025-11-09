@@ -27,9 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tallermecanico.aplication\tallermecanico.aplication.csproj" />
     <ProjectReference Include="..\tallermecanico.domain\tallermecanico.domain.csproj" />
-    <ProjectReference Include="..\tallermecanico.infretruture\tallermecanico.infretruture.csproj" />
   </ItemGroup>
 
 </Project>

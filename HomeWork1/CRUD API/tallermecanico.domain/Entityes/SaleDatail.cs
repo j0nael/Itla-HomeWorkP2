@@ -11,10 +11,6 @@ namespace tallermecanico.domain.Entityes
         public Sale Sale { get; set; }
 
         public int SparePartId { get; set; }
-        public SparePart SparePart { get; set; }
-
-        public int Quantity { get; set; }
-        public double UnitPrice { get; set; }
-        public double Subtotal => Quantity * UnitPrice;
+       
     }
 }

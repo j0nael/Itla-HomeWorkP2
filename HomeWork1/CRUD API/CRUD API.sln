@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tallermecanico.domain", "ta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tallermecanico.infretruture", "tallermecanico.infretruture\tallermecanico.infretruture.csproj", "{2D0B9B4D-3E30-443B-8F52-1369629FF967}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tallermecanico.aplication", "tallermecanico.aplication\tallermecanico.aplication.csproj", "{76D580EA-21DC-4048-B77C-13180D0F6CF6}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -29,10 +27,6 @@ Global
 		{2D0B9B4D-3E30-443B-8F52-1369629FF967}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D0B9B4D-3E30-443B-8F52-1369629FF967}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D0B9B4D-3E30-443B-8F52-1369629FF967}.Release|Any CPU.Build.0 = Release|Any CPU
-		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

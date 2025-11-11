@@ -1,8 +1,9 @@
-﻿namespace tallermecanico.aplication.Services
+﻿using tallermecanico.infretruture.Interfaces;
+namespace tallermecanico.aplication.Services
 {
     public class CustomerService
     {
-        //private readonly ICustomer _customerService;
+        private readonly ICustomer _customerService;
         public CustomerService() { }
     }
 }

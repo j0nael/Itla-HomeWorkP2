@@ -16,7 +16,7 @@ namespace tallermecanico.infretruture.Core
         {
             contex = _contex;
         }
-        public async Task<T> Getbtid(int id)
+        public async Task<T> Getbyid(int id)
         {
             return await _contex.Set<T>().FindAsync(id);
         }

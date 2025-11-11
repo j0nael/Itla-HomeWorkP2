@@ -5,7 +5,7 @@
         Task<T> Create(T entity);
         Task<T> Delete(int id);
         Task<List<T>> GetAll();
-        Task<T> Getbtid(int id);
+        Task<T> Getbyid(int id);
         Task<T> Update(T entity);
     }
 }

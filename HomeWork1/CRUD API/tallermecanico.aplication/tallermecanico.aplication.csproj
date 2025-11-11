@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\tallermecanico.infretruture\tallermecanico.infretruture.csproj" />
+    <PackageReference Include="FluentValidation" Version="12.1.0" />
+    <PackageReference Include="Mapster" Version="7.4.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\tallermecanico.infretruture\tallermecanico.infretruture.csproj" />
+  </ItemGroup>
+	
 </Project>

@@ -1,7 +1,5 @@
 ﻿using tallermecanico.infretruture.Model;
-{
-    
-}
+
 
 namespace tallermecanico.infretruture.Interfaces
 {

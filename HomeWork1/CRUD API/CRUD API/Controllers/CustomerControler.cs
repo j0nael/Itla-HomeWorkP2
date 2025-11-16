@@ -20,7 +20,7 @@ namespace CRUD_API.Controllers
             var customers = _aPIContex.Customers.ToList();
             var list = new List<CustomerDTO>();
 
-            var seleccustomers = customers.Select(c => new CustomerDTO
+            var seleccustomers = customers.Select(c => new CustomerModel
             {
 
                 FirstName = c.FirstName,

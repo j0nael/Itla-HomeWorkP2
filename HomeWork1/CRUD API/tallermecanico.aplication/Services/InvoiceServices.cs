@@ -8,9 +8,9 @@ namespace tallermecanico.aplication.Services
 {
     public class Invoiceservices : IInvoiceservices
     {
-        private readonly IInvoicerepositorie _invoice;
+        private readonly IInvoiceRepository _invoice;
 
-        public Invoiceservices(IInvoicerepositorie invoice)
+        public Invoiceservices(IInvoiceRepository invoice)
         {
             _invoice = invoice;
         }

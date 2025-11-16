@@ -2,7 +2,7 @@
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface IInvoicerepositorie : IBaserepositorie<InvoiceModel>
+    public interface IInvoiceRepository : IBaseRepository<InvoiceModel>
     {
         Task CreateinvoiceAsync(InvoiceModel invoice);
         Task<List<InvoiceModel>> GetAllinvoicesAsync();

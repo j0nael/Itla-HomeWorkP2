@@ -3,7 +3,7 @@
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface IRepairRepository : IBaserepositorie<RepairModel>
+    public interface IRepairRepository : IBaseRepository<RepairModel>
     {
         Task CreaterepairAsync(RepairModel repair);
         Task<List<RepairModel>> GetAllrepairsAsync();

@@ -9,7 +9,7 @@ using tallermecanico.infretruture.Interfaces;
 
 namespace tallermecanico.infretruture.Core
 {
-    public class Baserepositorie<T> : IBaserepositorie<T> where T : class
+    public class Baserepositorie<T> : IBaseRepository<T> where T : class
     {
         private readonly CrudAPIContex _contex;
         public Baserepositorie(CrudAPIContex contex)

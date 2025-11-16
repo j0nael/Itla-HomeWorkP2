@@ -7,7 +7,7 @@ using tallermecanico.infretruture.Model;
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface IVehicle:IBaserepositorie<VehicleModel>
+    public interface ISaleDetailRepository:IBaseRepository<SaleDetailModel>
     {
     }
 }

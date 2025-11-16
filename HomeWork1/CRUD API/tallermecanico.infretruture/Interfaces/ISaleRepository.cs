@@ -7,7 +7,7 @@ using tallermecanico.infretruture.Model;
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface ISaleRepository:IBaserepositorie<SaleModel>
+    public interface ISaleRepository:IBaseRepository<SaleModel>
     {
         Task CreatesaleAsync(SaleModel sale);
         Task<List<SaleModel>> GetAllsalesAsync();

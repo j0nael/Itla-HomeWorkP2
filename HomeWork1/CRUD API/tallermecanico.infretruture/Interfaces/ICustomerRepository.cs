@@ -3,7 +3,7 @@
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface ICustomerrepositorie : IBaserepositorie<CustomerModel>
+    public interface ICustomerRepository : IBaseRepository<CustomerModel>
     {
         Task CreateCustomerAsync(CustomerModel customer);
         Task<List<CustomerModel>> GetAllCustomersAsync();

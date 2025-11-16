@@ -3,7 +3,7 @@
 
 namespace tallermecanico.infretruture.Interfaces
 {
-    public interface IMechanicrepositorie : IBaserepositorie<MechanicModel>
+    public interface IMechanicrepositorie : IBaseRepository<MechanicModel>
     {
         Task CreatemechanicAsync(MechanicModel mechanic);
         Task<List<MechanicModel>> GetAllmechanicsAsync();

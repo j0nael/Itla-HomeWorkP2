@@ -8,9 +8,9 @@ namespace tallermecanico.aplication.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly ICustomerrepositorie _customer;
+        private readonly ICustomerRepository _customer;
 
-        public CustomerService(ICustomerrepositorie customer)
+        public CustomerService(ICustomerRepository customer)
         {
             _customer = customer;
         }

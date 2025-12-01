@@ -8,7 +8,7 @@ using tallermecanico.infretruture.DBContex;
 
 namespace tallermecanico.infretruture.Repositories
 {
-    internal class VehicleRepositorie:Baserepositorie<VehicleRepositorie>
+    public class VehicleRepositorie:Baserepositorie<VehicleRepositorie>
     {
         public VehicleRepositorie(CrudAPIContex contex) : base(contex)
         {

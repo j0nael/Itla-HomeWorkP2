@@ -1,27 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using tallermecanico.infretruture.DBContex;
+﻿using FluentValidation;
 using tallermecanico.infretruture.Model;
+
 namespace tallermecanico.aplication.Validation
 {
-    public class MechanicValidetion:AbstractValidator<MechanicModel>
+    public class ValidationSeller : AbstractValidator<SellerModel>
     {
-        private readonly CrudAPIContex _context;
-
-        public MechanicValidetion(CrudAPIContex contex)
+        public ValidationSeller()
         {
-            _context = contex;
-            RuleFor(m => m.FirstName)
-                .NotEmpty().WithMessage("El nombre es obligatorio.")
+            RuleFor(s => s.FirstName)
+                .NotEmpty().WithMessage("El nombre del vendedor es obligatorio.")
                 .MaximumLength(255).WithMessage("El nombre no puede superar los 255 caracteres.");
-            RuleFor(m => m.Specialty)
-                .NotEmpty().WithMessage("El apellido es obligatorio.")
+
+            RuleFor(s => s.LastName)
+                .NotEmpty().WithMessage("El apellido del vendedor es obligatorio.")
                 .MaximumLength(255).WithMessage("El apellido no puede superar los 255 caracteres.");
-       
+
+            RuleFor(s => s.Email)
+                .NotEmpty().WithMessage("El correo es obligatorio.")
+                .EmailAddress().WithMessage("Debe ingresar un correo válido.")
+                .MaximumLength(255).WithMessage("El correo no puede superar los 255 caracteres.");
+
+            RuleFor(s => s.PhoneNumber)
+                .NotEmpty().WithMessage("El número de teléfono es obligatorio.")
+                .MaximumLength(12).WithMessage("El número no puede superar los 12 caracteres.");
         }
     }
 }

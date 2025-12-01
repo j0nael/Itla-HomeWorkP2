@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using tallermecanico.infretruture.DBContex;
+﻿using FluentValidation;
 using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.DBContex;
+
 namespace tallermecanico.aplication.Validation
 {
-    public class MechanicValidetion:AbstractValidator<MechanicModel>
+    public class ValidationMechanic : AbstractValidator<MechanicModel>
     {
         private readonly CrudAPIContex _context;
 
-        public MechanicValidetion(CrudAPIContex contex)
+        public ValidationMechanic(CrudAPIContex context)
         {
-            _context = contex;
+            _context = context;
+
             RuleFor(m => m.FirstName)
-                .NotEmpty().WithMessage("El nombre es obligatorio.")
+                .NotEmpty().WithMessage("El nombre del mecánico es obligatorio.")
                 .MaximumLength(255).WithMessage("El nombre no puede superar los 255 caracteres.");
+
             RuleFor(m => m.Specialty)
-                .NotEmpty().WithMessage("El apellido es obligatorio.")
-                .MaximumLength(255).WithMessage("El apellido no puede superar los 255 caracteres.");
-       
+                .NotEmpty().WithMessage("La especialidad es obligatoria.")
+                .MaximumLength(255).WithMessage("La especialidad no puede superar los 255 caracteres.");
         }
     }
 }

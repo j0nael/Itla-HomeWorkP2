@@ -3,16 +3,18 @@ using tallermecanico.aplication.DTOs;
 using Mapster;
 using tallermecanico.infretruture.Model;
 using tallermecanico.aplication.Contract;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class CustomerService : ICustomerService
     {
         private readonly ICustomerRepository _customer;
-
-        public CustomerService(ICustomerRepository customer)
+        private readonly UnitOfWork _unitOfWork;   
+        public CustomerService(ICustomerRepository customer, UnitOfWork unitOfWork)
         {
             _customer = customer;
+            _unitOfWork = unitOfWork;
         }
 
 

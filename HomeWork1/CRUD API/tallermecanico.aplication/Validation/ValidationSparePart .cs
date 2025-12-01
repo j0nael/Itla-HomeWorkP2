@@ -1,27 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FluentValidation;
-using tallermecanico.infretruture.DBContex;
+﻿using FluentValidation;
 using tallermecanico.infretruture.Model;
+
 namespace tallermecanico.aplication.Validation
 {
-    public class MechanicValidetion:AbstractValidator<MechanicModel>
+    public class ValidationSparePart : AbstractValidator<SparePartModel>
     {
-        private readonly CrudAPIContex _context;
-
-        public MechanicValidetion(CrudAPIContex contex)
+        public ValidationSparePart()
         {
-            _context = contex;
-            RuleFor(m => m.FirstName)
-                .NotEmpty().WithMessage("El nombre es obligatorio.")
+            RuleFor(s => s.Name)
+                .NotEmpty().WithMessage("El nombre del repuesto es obligatorio.")
                 .MaximumLength(255).WithMessage("El nombre no puede superar los 255 caracteres.");
-            RuleFor(m => m.Specialty)
-                .NotEmpty().WithMessage("El apellido es obligatorio.")
-                .MaximumLength(255).WithMessage("El apellido no puede superar los 255 caracteres.");
-       
+
+            RuleFor(s => s.InitialQuantity)
+                .GreaterThanOrEqualTo(0).WithMessage("La cantidad inicial no puede ser negativa.");
+
+            RuleFor(s => s.Quantity)
+                .GreaterThanOrEqualTo(0).WithMessage("La cantidad actual no puede ser negativa.");
+
+            RuleFor(s => s.UnitPrice)
+                .GreaterThan(0).WithMessage("El precio unitario debe ser mayor que 0.");
+
+            RuleFor(s => s.WholesalePrice)
+                .GreaterThanOrEqualTo(0).WithMessage("El precio al por mayor debe ser mayor o igual a 0.");
+
+            RuleFor(s => s.EntryDate)
+                .LessThanOrEqualTo(DateTime.Now).WithMessage("La fecha de entrada no puede ser futura.");
         }
     }
 }

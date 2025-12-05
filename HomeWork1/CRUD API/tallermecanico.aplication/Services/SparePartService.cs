@@ -1,18 +1,20 @@
-﻿using tallermecanico.infretruture.Interfaces;
-using tallermecanico.aplication.DTOs;
-using Mapster;
-using tallermecanico.infretruture.Model;
+﻿using Mapster;
 using tallermecanico.aplication.Contract;
+using tallermecanico.aplication.DTOs;
+using tallermecanico.infretruture.Interfaces;
+using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class SparePartService : ISparePartService
     {
         private readonly ISparePartRepository _sparePart;
-
-        public SparePartService(ISparePartRepository sparePart)
+        private readonly UnitOfWork _unitOfWork;
+        public SparePartService(ISparePartRepository sparePart,UnitOfWork unitOfWork)
         {
             _sparePart = sparePart;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<SparePartDTO> CreateSparePartAsync(SparePartDTO sparePartDto)

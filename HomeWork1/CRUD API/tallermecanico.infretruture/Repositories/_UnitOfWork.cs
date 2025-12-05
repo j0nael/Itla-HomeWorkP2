@@ -8,12 +8,12 @@ using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.infretruture.Repositories
 {
-    public class UnitOfWork
+    public class UnitOfWork : IUnitOfWork
     {
-     
+
         public readonly CrudAPIContex _context;
         public CustomerRepositorie Customers { get; }
-        public InvoiceRepositorie Invoices { get; } 
+        public InvoiceRepositorie Invoices { get; }
         public RepairRepositorie Repairs { get; }
 
         public SaleRepositorie Sales { get; }
@@ -24,18 +24,18 @@ namespace tallermecanico.infretruture.Repositories
 
         public SellerRepositorie Sellers { get; }
         public VehicleRepositorie Vehicles { get; }
-        public UnitOfWork(CrudAPIContex context,CustomerRepositorie customerRepositorie,InvoiceRepositorie invoiceRepositorie,
-            RepairRepositorie repairRepositorie,SaleRepositorie saleRepositorie,SaleDetailsRepositorie saleDetailsRepositorie,
-            MechanicRepositorie mechanicRepositorie,SellerRepositorie sellerRepositorie,VehicleRepositorie vehicleRepositorie)
+        public UnitOfWork(CrudAPIContex context, CustomerRepositorie customerRepositorie, InvoiceRepositorie invoiceRepositorie,
+            RepairRepositorie repairRepositorie, SaleRepositorie saleRepositorie, SaleDetailsRepositorie saleDetailsRepositorie,
+            MechanicRepositorie mechanicRepositorie, SellerRepositorie sellerRepositorie, VehicleRepositorie vehicleRepositorie)
         {
             _context = context;
             Customers = customerRepositorie;
             Invoices = invoiceRepositorie;
             Repairs = repairRepositorie;
-            Sales = saleRepositorie;    
-            SaleDetails =  saleDetailsRepositorie;
+            Sales = saleRepositorie;
+            SaleDetails = saleDetailsRepositorie;
             Mechanics = mechanicRepositorie;
-            Sellers =sellerRepositorie;
+            Sellers = sellerRepositorie;
             Vehicles = vehicleRepositorie;
         }
         public async Task<int> CompleteAsync()

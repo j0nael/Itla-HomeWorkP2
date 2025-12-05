@@ -1,18 +1,20 @@
-﻿using tallermecanico.infretruture.Interfaces;
-using tallermecanico.aplication.DTOs;
-using Mapster;
-using tallermecanico.infretruture.Model;
+﻿using Mapster;
 using tallermecanico.aplication.Contract;
+using tallermecanico.aplication.DTOs;
+using tallermecanico.infretruture.Interfaces;
+using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class RepairService : IRepairService
     {
         private readonly IRepairRepository _repair;
-
-        public RepairService(IRepairRepository repair)
+        private readonly UnitOfWork _unitOfWork;
+        public RepairService(IRepairRepository repair,UnitOfWork unitOfWork)
         {
             _repair = repair;
+            _unitOfWork = unitOfWork;
         }
 
 

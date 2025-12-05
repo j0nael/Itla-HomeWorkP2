@@ -1,18 +1,20 @@
-﻿using tallermecanico.infretruture.Interfaces;
-using tallermecanico.aplication.DTOs;
-using Mapster;
-using tallermecanico.infretruture.Model;
+﻿using Mapster;
 using tallermecanico.aplication.Contract;
+using tallermecanico.aplication.DTOs;
+using tallermecanico.infretruture.Interfaces;
+using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class VehicleService : IVehicleService
     {
         private readonly IVehicleRepository _vehicle;
-
-        public VehicleService(IVehicleRepository vehicle)
+        private readonly UnitOfWork _unitOfWork;
+        public VehicleService(IVehicleRepository vehicle,UnitOfWork unitOfWork)
         {
             _vehicle = vehicle;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<VehicleDTO> CreateVehicleAsync(VehicleDTO vehicleDto)

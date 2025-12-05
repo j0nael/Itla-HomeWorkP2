@@ -11,6 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tallermecanico.infretruture
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tallermecanico.aplication", "tallermecanico.aplication\tallermecanico.aplication.csproj", "{76D580EA-21DC-4048-B77C-13180D0F6CF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazorprueba", "Blazorprueba\Blazorprueba.csproj", "{4CC1E34E-26A6-4376-989E-23FE73D6530D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7D52501C-5034-4DF5-91D0-F4F8DA40868E} = {7D52501C-5034-4DF5-91D0-F4F8DA40868E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +38,10 @@ Global
 		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{76D580EA-21DC-4048-B77C-13180D0F6CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CC1E34E-26A6-4376-989E-23FE73D6530D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CC1E34E-26A6-4376-989E-23FE73D6530D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CC1E34E-26A6-4376-989E-23FE73D6530D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CC1E34E-26A6-4376-989E-23FE73D6530D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

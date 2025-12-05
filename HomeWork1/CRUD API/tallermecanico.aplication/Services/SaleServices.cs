@@ -1,18 +1,20 @@
-﻿using tallermecanico.infretruture.Interfaces;
-using tallermecanico.aplication.DTOs;
-using Mapster;
-using tallermecanico.infretruture.Model;
+﻿using Mapster;
 using tallermecanico.aplication.Contract;
+using tallermecanico.aplication.DTOs;
+using tallermecanico.infretruture.Interfaces;
+using tallermecanico.infretruture.Model;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class SaleServices : ISaleServices
     {
         private readonly ISaleRepository _sale;
-
-        public SaleServices(ISaleRepository sale)
+        private readonly UnitOfWork _unitOfWork;
+        public SaleServices(ISaleRepository sale,UnitOfWork unitOfWork)
         {
             _sale = sale;
+            _unitOfWork = unitOfWork;
         }
 
 

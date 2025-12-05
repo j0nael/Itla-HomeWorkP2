@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mapster;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,17 +8,19 @@ using tallermecanico.aplication.Contract;
 using tallermecanico.aplication.DTOs;
 using tallermecanico.infretruture.Interfaces;
 using tallermecanico.infretruture.Model;
-using Mapster;
+using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.aplication.Services
 {
     public class SellerServices : ISellerServices
     {
         private readonly ISellerRepository _seller;
+        private readonly UnitOfWork _unitOfWork;
 
-        public SellerServices(ISellerRepository seller)
+        public SellerServices(ISellerRepository seller,UnitOfWork unitOfWork)
         {
             _seller = seller;
+            _unitOfWork = unitOfWork;
         }
 
 

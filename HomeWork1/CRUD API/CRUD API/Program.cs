@@ -18,6 +18,16 @@ namespace CRUD_API
             });
 
             // Add services to the container.
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazor",
+                    policy => policy
+                        .WithOrigins("https://localhost:7015") // Aquí debe ir la URL de tu Blazor
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+            });
+
+
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,6 +49,7 @@ namespace CRUD_API
 
             app.UseAuthorization();
 
+            app.UseCors("AllowBlazor");
 
             app.MapControllers();
 

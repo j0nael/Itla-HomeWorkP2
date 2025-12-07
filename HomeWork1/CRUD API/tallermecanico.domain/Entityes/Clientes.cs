@@ -6,7 +6,6 @@ namespace tallermecanico.domain.Entityes
 
     public class Customer
     {
-        [Column("CustomerId")]
 
         public int Id { get; set; }
         public string FirstName { get; set; }

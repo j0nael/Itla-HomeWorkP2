@@ -1,0 +1,47 @@
+﻿@page "/customers/create"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject CustomerService service
+@inject NavigationManager nav
+
+<h3>Crear Cliente</h3>
+
+<EditForm Model="@customer" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label>Nombre</label>
+        <InputText class="form-control" @bind-Value="customer.FirstName" />
+    </div>
+
+    <div class="form-group">
+        <label>Apellido</label>
+        <InputText class="form-control" @bind-Value="customer.LastName" />
+    </div>
+
+    <div class="form-group">
+        <label>Correo</label>
+        <InputText class="form-control" @bind-Value="customer.Email" />
+    </div>
+
+    <div class="form-group">
+        <label>Teléfono</label>
+        <InputText class="form-control" @bind-Value="customer.PhoneNumber" />
+    </div>
+
+    <button class="btn btn-success mt-3">Guardar</button>
+    <button class="btn btn-secondary mt-3" @onclick="Back">Cancelar</button>
+</EditForm>
+
+@code {
+    CustomerDTO customer = new();
+
+    async Task Save()
+    {
+        await service.Create(customer);
+        nav.NavigateTo("/customers");
+    }
+
+    void Back() => nav.NavigateTo("/customers");
+}

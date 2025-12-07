@@ -22,7 +22,7 @@ namespace CRUD_API.Controllers
 
             var seleccustomers = customers.Select(c => new CustomerModel
             {
-
+                Id= c.Id,
                 FirstName = c.FirstName,
                 LastName = c.LastName,
                 Email = c.Email,

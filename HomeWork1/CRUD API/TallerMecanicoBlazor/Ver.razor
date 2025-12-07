@@ -1,0 +1,66 @@
+﻿
+@page "/customers"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject CustomerService service
+@inject NavigationManager nav
+
+<h3>Clientes</h3>
+
+<button class="btn btn-primary" @onclick="Create">Nuevo Cliente</button>
+
+@if (customers == null)
+{
+    <p>Cargando...</p>
+}
+else if (customers.Count == 0)
+{
+    <p>No hay clientes registrados.</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var c in customers)
+            {
+                <tr>
+                    <td>@c.Id</td>
+                    <td>@c.FirstName @c.LastName</td>
+                    <td>@c.Email</td>
+                    <td>@c.PhoneNumber</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Edit(c.Id)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(c.Id)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<CustomerDTO> customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await service.GetAll();
+    }
+
+    void Create() => nav.NavigateTo("/customers/create");
+    void Edit(int id) => nav.NavigateTo($"/customers/edit/{id}");
+
+    async Task Delete(int id)
+    {
+        await service.Delete(id);
+        customers = await service.GetAll();
+    }
+}

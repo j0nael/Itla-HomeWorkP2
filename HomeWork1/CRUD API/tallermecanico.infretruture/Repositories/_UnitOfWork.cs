@@ -8,7 +8,7 @@ using tallermecanico.infretruture.Repositories;
 
 namespace tallermecanico.infretruture.Repositories
 {
-    public class UnitOfWork : IUnitOfWork
+    public class UnitOfWork 
     {
 
         public readonly CrudAPIContex _context;

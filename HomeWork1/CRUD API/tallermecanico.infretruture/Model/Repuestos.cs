@@ -1,35 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using tallermecanico.infretruture.Model;
 
-namespace tallermecanico.infretruture.Model
+public class SparePartModel
 {
-    public class SparePartModel
+    [Key]
+    public int SparePartId { get; set; }
+
+    [Required]
+    [MaxLength(200)]
+    public string Name { get; set; }
+
+    public int InitialQuantity { get; set; }
+
+    [Required]
+    public int Quantity { get; set; }
+
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal UnitPrice { get; set; }
+
+    [Required]
+    [Column(TypeName = "decimal(18,2)")]
+    public decimal WholesalePrice { get; set; }
+
+    public DateTime EntryDate { get; set; } = DateTime.Now;
+
+    // Navegación: Una pieza aparece en múltiples detalles de venta
+    public virtual ICollection<SaleDetailModel> SaleDetails { get; set; } = new List<SaleDetailModel>();
+
+    public SparePartModel() { }
+
+    public SparePartModel(string name, int quantity, decimal unitPrice, decimal wholesalePrice)
     {
-        [Key]
-        public int SparePartId { get; set; }
-
-        public string Name { get; set; }
-        public int InitialQuantity { get; set; }
-        public int Quantity { get; set; }
-        public double UnitPrice { get; set; }
-        public double WholesalePrice { get; set; }
-        public DateTime EntryDate { get; set; }
-
-       
-        public List<SaleDetailModel> SaleDetails { get; set; } = new List<SaleDetailModel>();
-
-        public SparePartModel() { }
-
-        public SparePartModel(int sparePartId, string name, int quantity, double unitPrice, double wholesalePrice, DateTime entryDate)
-        {
-            SparePartId = sparePartId;
-            Name = name;
-            Quantity = quantity;
-            InitialQuantity = quantity;
-            UnitPrice = unitPrice;
-            WholesalePrice = wholesalePrice;
-            EntryDate = entryDate;
-        }
+        Name = name;
+        Quantity = quantity;
+        InitialQuantity = quantity;
+        UnitPrice = unitPrice;
+        WholesalePrice = wholesalePrice;
     }
 }

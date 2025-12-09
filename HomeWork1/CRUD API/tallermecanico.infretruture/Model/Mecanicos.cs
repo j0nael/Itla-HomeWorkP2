@@ -9,18 +9,24 @@ namespace tallermecanico.infretruture.Model
     {
         [Key]
         public int MechanicId { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string FirstName { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string Specialty { get; set; }
 
-        public List<RepairModel>? Repairs { get; set; }
+        // Navegación: Un mecánico realiza múltiples reparaciones
+        public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
 
-        public MechanicModel(int mechanicId, string firstName, string specialty)
+        public MechanicModel() { }
+
+        public MechanicModel(string firstName, string specialty)
         {
-            MechanicId = mechanicId;
             FirstName = firstName;
             Specialty = specialty;
         }
-
-        public MechanicModel() { }
     }
 }

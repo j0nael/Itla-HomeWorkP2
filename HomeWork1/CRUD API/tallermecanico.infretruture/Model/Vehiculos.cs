@@ -7,40 +7,45 @@ namespace tallermecanico.infretruture.Model
     public class VehicleModel
     {
         [Key]
-        
         public int VehicleId { get; set; }
+
+        [Required]
+        [MaxLength(20)]
         public string LicensePlate { get; set; }
+
+        [Required]
+        [MaxLength(50)]
         public string Brand { get; set; }
+
+        [Required]
+        [MaxLength(50)]
         public string Model { get; set; }
+
+        [MaxLength(30)]
         public string Color { get; set; }
+
         public int Year { get; set; }
 
+        // FK: Un vehículo pertenece a un cliente
+        [Required]
         public int CustomerId { get; set; }
 
-        public int? SellerId { get; set; }
+        [ForeignKey(nameof(CustomerId))]
+        public virtual CustomerModel Customer { get; set; }
 
-        public int? InvoiceId { get; set; }
-
-        public InvoiceModel? Invoice { get; set; }
-
-        public CustomerModel? Customer { get; set; }
-
-        public SellerModel? Seller { get; set; }
-
-        public List<RepairModel>? Repairs { get; set; }
+        // Navegación: Un vehículo tiene múltiples reparaciones
+        public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
 
         public VehicleModel() { }
 
-        public VehicleModel(int vehicleId,string licensePlate, string brand, string model, string color, int year,int customerId)
+        public VehicleModel(string licensePlate, string brand, string model, string color, int year, int customerId)
         {
-            VehicleId = vehicleId;
             LicensePlate = licensePlate;
             Brand = brand;
             Model = model;
             Color = color;
             Year = year;
             CustomerId = customerId;
-
         }
     }
 }

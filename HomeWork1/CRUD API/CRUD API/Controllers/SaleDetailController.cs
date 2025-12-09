@@ -28,8 +28,7 @@ namespace CRUD_API.Controllers
                 SaleId = sd.SaleId,
                 SparePartId = sd.SparePartId,
                 Quantity = sd.Quantity,
-                UnitPrice = sd.UnitPrice,
-                Subtotal = sd.Quantity * sd.UnitPrice
+             
             }).ToList();
 
             return Ok(list);
@@ -51,8 +50,8 @@ namespace CRUD_API.Controllers
                 SaleId = saleDetail.SaleId,
                 SparePartId = saleDetail.SparePartId,
                 Quantity = saleDetail.Quantity,
-                UnitPrice = saleDetail.UnitPrice,
-                Subtotal = saleDetail.Subtotal
+               
+            
             };
 
             return Ok(saleDetailDTO);
@@ -67,7 +66,7 @@ namespace CRUD_API.Controllers
                 SaleId = saleDetailDTO.SaleId,
                 SparePartId = saleDetailDTO.SparePartId,
                 Quantity = saleDetailDTO.Quantity,
-                UnitPrice = saleDetailDTO.UnitPrice
+               
             };
 
             _aPIContex.SaleDetails.Add(saleDetail);
@@ -89,7 +88,7 @@ namespace CRUD_API.Controllers
             saleDetail.SaleId = saleDetailDTO.SaleId;
             saleDetail.SparePartId = saleDetailDTO.SparePartId;
             saleDetail.Quantity = saleDetailDTO.Quantity;
-            saleDetail.UnitPrice = saleDetailDTO.UnitPrice;
+           
 
             _aPIContex.SaleDetails.Update(saleDetail);
             _aPIContex.SaveChanges();

@@ -2,6 +2,7 @@
 using tallermecanico.infretruture.Model;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
+using tallermecanico.infretruture.DBContex;
 
 namespace CRUD_API.Controllers
 {
@@ -26,7 +27,7 @@ namespace CRUD_API.Controllers
             {
                 CustomerId = s.CustomerId,
                 SellerId = s.SellerId,
-                Total = s.Total,
+               
                 Date = s.Date
             }).ToList();
 
@@ -45,7 +46,7 @@ namespace CRUD_API.Controllers
             {
                 CustomerId = sale.CustomerId,
                 SellerId = sale.SellerId,
-                Total = sale.Total,
+               
                 Date = sale.Date
             };
 
@@ -68,7 +69,7 @@ namespace CRUD_API.Controllers
             {
                 CustomerId = saleDTO.CustomerId,
                 SellerId = saleDTO.SellerId,
-                Total = saleDTO.Total,
+                
                 Date = saleDTO.Date
             };
 
@@ -96,7 +97,7 @@ namespace CRUD_API.Controllers
 
             sale.CustomerId = saleDTO.CustomerId;
             sale.SellerId = saleDTO.SellerId;
-            sale.Total = saleDTO.Total;
+            
             sale.Date = saleDTO.Date;
 
             _aPIContex.Sales.Update(sale);

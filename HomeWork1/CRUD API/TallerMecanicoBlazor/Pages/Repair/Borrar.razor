@@ -1,0 +1,20 @@
+﻿@page "/repairs/delete/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@inject RepairService RepairService
+@inject NavigationManager Nav
+
+<h3>Eliminar Reparación</h3>
+
+<p>¿Seguro que deseas eliminar la reparación?</p>
+
+<button class="btn btn-danger" @onclick="Delete">Sí, eliminar</button>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    async Task Delete()
+    {
+        await RepairService.DeleteAsync(id);
+        Nav.NavigateTo("/repairs");
+    }
+}

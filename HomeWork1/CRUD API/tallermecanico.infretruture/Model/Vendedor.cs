@@ -1,28 +1,36 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-namespace tallermecanico.infretruture.Model 
+namespace tallermecanico.infretruture.Model
 {
     public class SellerModel
     {
         [Key]
         public int SellerId { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string FirstName { get; set; }
+
+        [Required]
+        [MaxLength(100)]
         public string LastName { get; set; }
+
+        [MaxLength(150)]
         public string Email { get; set; }
+
+        [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
-        public List<VehicleModel>? Vehicles { get; set; }
+        // Navegación: Un vendedor realiza múltiples ventas
+        public virtual ICollection<SaleModel> Sales { get; set; } = new List<SaleModel>();
 
-        public List<RepairModel>? Repairs { get; set; }
-        public List<SparePartModel>? SpareParts { get; set; }
-
-        public List<InvoiceModel>? Invoices { get; set; }
+        // Navegación: Un vendedor genera múltiples facturas
+        public virtual ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
 
         public SellerModel() { }
 
-        public SellerModel(int sellerId, string firstName, string lastName, string email, string phoneNumber)
+        public SellerModel(string firstName, string lastName, string email, string phoneNumber)
         {
-            SellerId = sellerId;
             FirstName = firstName;
             LastName = lastName;
             Email = email;

@@ -29,8 +29,7 @@ namespace CRUD_API.Controllers
                 Name = s.Name,
                 InitialQuantity = s.InitialQuantity,
                 Quantity = s.Quantity,
-                UnitPrice = s.UnitPrice,
-                WholesalePrice = s.WholesalePrice,
+               
                 EntryDate = s.EntryDate
             }).ToList();
 
@@ -53,8 +52,7 @@ namespace CRUD_API.Controllers
                 Name = sparePart.Name,
                 InitialQuantity = sparePart.InitialQuantity,
                 Quantity = sparePart.Quantity,
-                UnitPrice = sparePart.UnitPrice,
-                WholesalePrice = sparePart.WholesalePrice,
+              
                 EntryDate = sparePart.EntryDate
             };
 
@@ -70,8 +68,7 @@ namespace CRUD_API.Controllers
                 Name = sparePartDTO.Name,
                 InitialQuantity = sparePartDTO.Quantity,
                 Quantity = sparePartDTO.Quantity,
-                UnitPrice = sparePartDTO.UnitPrice,
-                WholesalePrice = sparePartDTO.WholesalePrice,
+               
                 EntryDate = DateTime.Now
             };
 
@@ -94,8 +91,7 @@ namespace CRUD_API.Controllers
             sparePart.Name = sparePartDTO.Name;
             sparePart.InitialQuantity = sparePartDTO.InitialQuantity;
             sparePart.Quantity = sparePartDTO.Quantity;
-            sparePart.UnitPrice = sparePartDTO.UnitPrice;
-            sparePart.WholesalePrice = sparePartDTO.WholesalePrice;
+         
             sparePart.EntryDate = sparePartDTO.EntryDate;
 
             _aPIContex.SpareParts.Update(sparePart);

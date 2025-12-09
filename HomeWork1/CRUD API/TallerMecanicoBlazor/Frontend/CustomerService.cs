@@ -1,12 +1,11 @@
-﻿
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 using tallermecanico.aplication.DTOs;
 
 namespace TallerMecanicoBlazor.Frontend
 
 {
     
-    public class CustomerService : ICustomerService
+    public class CustomerService 
     {
         private readonly HttpClient _http;
         private readonly ApiConfig _config;
@@ -19,30 +18,30 @@ namespace TallerMecanicoBlazor.Frontend
 
         public async Task<List<CustomerDTO>> GetAll()
         {
-            var result = await _http.GetFromJsonAsync<List<CustomerDTO>>($"{_config.ApiBaseUrl}/customer");
+            var result = await _http.GetFromJsonAsync<List<CustomerDTO>>($"{_config.ApiBaseUrl}/api/customer");
             return result ?? new List<CustomerDTO>();
         }
 
         public async Task<CustomerDTO?> GetById(int id)
         {
-            return await _http.GetFromJsonAsync<CustomerDTO>($"{_config.ApiBaseUrl}/customer/{id}");
+            return await _http.GetFromJsonAsync<CustomerDTO>($"{_config.ApiBaseUrl}/api/customer/{id}");
         }
 
         public async Task<bool> Create(CustomerDTO customer)
         {
-            var response = await _http.PostAsJsonAsync($"{_config.ApiBaseUrl}/customer", customer);
+            var response = await _http.PostAsJsonAsync($"{_config.ApiBaseUrl}/api/customer", customer);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> Update(int id, CustomerDTO customer)
         {
-            var response = await _http.PutAsJsonAsync($"{_config.ApiBaseUrl}/customer/{id}", customer);
+            var response = await _http.PutAsJsonAsync($"{_config.ApiBaseUrl}/api/customer/{id}", customer);
             return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> Delete(int id)
         {
-            var response = await _http.DeleteAsync($"{_config.ApiBaseUrl}/customer/{id}");
+            var response = await _http.DeleteAsync($"{_config.ApiBaseUrl}/api/customer/{id}");
             return response.IsSuccessStatusCode;
         }
     }

@@ -78,17 +78,20 @@ namespace CRUD_API.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
-        public IActionResult DeleteCustomer(int id, [FromBody] CustomerDTO customerdto)
+        public IActionResult DeleteCustomer(int id)
         {
             var customer = _aPIContex.Customers.FirstOrDefault(c => c.Id == id);
             if (customer == null)
             {
                 return NotFound($"Cliente con id:{id} no encontrado");
             }
+
             _aPIContex.Customers.Remove(customer);
             _aPIContex.SaveChanges();
+
             return NoContent();
         }
+
 
     }
 }

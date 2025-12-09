@@ -1,0 +1,105 @@
+﻿@page "/vehicles/create"
+@using TallerMecanicoBlazor.Frontend
+@using TallerMecanicoBlazor.Look
+@using tallermecanico.aplication.DTOs
+@inject VehicleService vehicleService
+@inject LookupService lookupService
+@inject NavigationManager nav
+
+<h3>Crear Vehículo</h3>
+
+<EditForm Model="@vehicle" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label>Placa</label>
+            <InputText class="form-control" @bind-Value="vehicle.LicensePlate" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Marca</label>
+            <InputText class="form-control" @bind-Value="vehicle.Brand" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label>Modelo</label>
+            <InputText class="form-control" @bind-Value="vehicle.Model" />
+        </div>
+        <div class="col-md-3 mb-3">
+            <label>Año</label>
+            <InputNumber class="form-control" @bind-Value="vehicle.Year" />
+        </div>
+        <div class="col-md-3 mb-3">
+            <label>Color</label>
+            <InputText class="form-control" @bind-Value="vehicle.Color" />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label>Cliente</label>
+            <InputSelect class="form-select" @bind-Value="vehicle.CustomerId">
+                <option value="0">-- Selecciona cliente --</option>
+                @foreach (var c in customers)
+                {
+                    <option value="@c.Id">@c.FullName</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label>Vendedor (opcional)</label>
+            <InputSelect class="form-select" @bind-Value="vehicle.SellerId">
+                <option value="">-- Ninguno --</option>
+                @foreach (var s in sellers)
+                {
+                    <option value="@s.SellerId">@s.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label>Factura (opcional)</label>
+            <InputSelect class="form-select" @bind-Value="vehicle.InvoiceId">
+                <option value="">-- Ninguna --</option>
+                @foreach (var inv in invoices)
+                {
+                    <option value="@inv.InvoiceId">@inv.InvoiceNumber</option>
+                }
+            </InputSelect>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-success me-2" type="submit">Guardar</button>
+        <button class="btn btn-secondary" @onclick="Cancel" type="button">Cancelar</button>
+    </div>
+</EditForm>
+
+@code {
+    VehicleDTO vehicle = new();
+    List<CustomerLookupDto> customers = new();
+    List<SellerLookupDto> sellers = new();
+    List<InvoiceLookupDto> invoices = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var t1 = lookupService.GetCustomers();
+        var t2 = lookupService.GetSellers();
+        var t3 = lookupService.GetInvoices();
+        await Task.WhenAll(t1, t2, t3);
+        customers = t1.Result;
+        sellers = t2.Result;
+        invoices = t3.Result;
+    }
+
+    async Task Save()
+    {
+        // validación mínima
+        if (vehicle.CustomerId == 0)
+        {
+            // podrías mostrar un toast o mensaje
+            return;
+        }
+
+        var ok = await vehicleService.CreateVehicle(vehicle);
+        if (ok) nav.NavigateTo("/vehicles");
+    }
+
+    void Cancel() => nav.NavigateTo("/vehicles");
+}

@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using tallermecanico.infretruture.Core;
 using tallermecanico.infretruture.DBContex;
+using tallermecanico.infretruture.Model;
 
 namespace tallermecanico.infretruture.Repositories
 {
-    public class VehicleRepositorie:Baserepositorie<VehicleRepositorie>
+    public class VehicleRepositorie:Baserepositorie<VehicleModel>
     {
         public VehicleRepositorie(CrudAPIContex contex) : base(contex)
         {

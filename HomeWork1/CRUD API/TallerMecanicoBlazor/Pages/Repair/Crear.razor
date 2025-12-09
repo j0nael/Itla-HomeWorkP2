@@ -1,0 +1,40 @@
+﻿@page "/repairs/create"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject RepairService RepairService
+@inject NavigationManager Nav
+
+<h3>Nueva Reparación</h3>
+
+<EditForm Model="repair" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Placa:</label>
+        <InputText class="form-control" @bind-Value="repair.LicensePlate" />
+    </div>
+
+    <div>
+        <label>Descripción:</label>
+        <InputTextArea class="form-control" @bind-Value="repair.Description" />
+    </div>
+
+    <div>
+        <label>Costo:</label>
+        <InputNumber class="form-control" @bind-Value="repair.Cost" />
+    </div>
+
+    <button class="btn btn-primary mt-3" type="submit">Guardar</button>
+</EditForm>
+
+@code {
+    RepairDTO repair = new();
+
+    async Task Save()
+    {
+        repair.Date = DateTime.Now;
+        await RepairService.CreateAsync(repair);
+        Nav.NavigateTo("/repairs");
+    }
+}

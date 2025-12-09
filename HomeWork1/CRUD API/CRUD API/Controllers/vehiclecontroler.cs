@@ -24,15 +24,15 @@ namespace CRUD_API.Controllers
             var vehicles = _aPIContex.Vehicles.ToList();
 
             var list = vehicles.Select(v => new VehicleDTO
-            {
+
+            {   VehicleId=v.VehicleId,
                 LicensePlate = v.LicensePlate,
                 Brand = v.Brand,
                 Model = v.Model,
                 Color = v.Color,
                 Year = v.Year,
                 CustomerId = v.CustomerId,
-                SellerId = v.SellerId,
-                InvoiceId = v.InvoiceId
+              
             }).ToList();
 
             return Ok(list);
@@ -48,14 +48,14 @@ namespace CRUD_API.Controllers
 
             var vehicleDTO = new VehicleDTO
             {
+                VehicleId=vehicle.VehicleId,
                 LicensePlate = vehicle.LicensePlate,
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Color = vehicle.Color,
                 Year = vehicle.Year,
                 CustomerId = vehicle.CustomerId,
-                SellerId = vehicle.SellerId,
-                InvoiceId = vehicle.InvoiceId
+                
             };
 
             return Ok(vehicleDTO);
@@ -78,14 +78,14 @@ namespace CRUD_API.Controllers
 
             var vehicle = new VehicleModel
             {
+                VehicleId=vehicleDTO.VehicleId,
                 LicensePlate = vehicleDTO.LicensePlate,
                 Brand = vehicleDTO.Brand,
                 Model = vehicleDTO.Model,
                 Color = vehicleDTO.Color,
                 Year = vehicleDTO.Year,
                 CustomerId = vehicleDTO.CustomerId,
-                SellerId = vehicleDTO.SellerId,
-                InvoiceId = vehicleDTO.InvoiceId
+               
             };
 
             _aPIContex.Vehicles.Add(vehicle);
@@ -112,15 +112,14 @@ namespace CRUD_API.Controllers
                 if (!sellerExists)
                     return BadRequest($"El SellerId {vehicleDTO.SellerId.Value} no existe.");
             }
-
+            vehicle.VehicleId = vehicleDTO.VehicleId;
             vehicle.LicensePlate = vehicleDTO.LicensePlate;
             vehicle.Brand = vehicleDTO.Brand;
             vehicle.Model = vehicleDTO.Model;
             vehicle.Color = vehicleDTO.Color;
             vehicle.Year = vehicleDTO.Year;
             vehicle.CustomerId = vehicleDTO.CustomerId;
-            vehicle.SellerId = vehicleDTO.SellerId;
-            vehicle.InvoiceId = vehicleDTO.InvoiceId;
+          
 
             _aPIContex.Vehicles.Update(vehicle);
             _aPIContex.SaveChanges();

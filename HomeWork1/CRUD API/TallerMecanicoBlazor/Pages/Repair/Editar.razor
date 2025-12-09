@@ -1,0 +1,51 @@
+﻿@page "/repairs/edit/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject RepairService RepairService
+@inject NavigationManager Nav
+
+<h3>Editar Reparación</h3>
+
+@if (repair == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="repair" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+
+        <div>
+            <label>Placa:</label>
+            <InputText class="form-control" @bind-Value="repair.LicensePlate" />
+        </div>
+
+        <div>
+            <label>Descripción:</label>
+            <InputTextArea class="form-control" @bind-Value="repair.Description" />
+        </div>
+
+        <div>
+            <label>Costo:</label>
+            <InputNumber class="form-control" @bind-Value="repair.Cost" />
+        </div>
+
+        <button class="btn btn-primary mt-3" type="submit">Guardar Cambios</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    RepairDTO? repair;
+
+    protected override async Task OnInitializedAsync()
+    {
+        repair = await RepairService.GetByIdAsync(id);
+    }
+
+    async Task Save()
+    {
+        await RepairService.UpdateAsync(id, repair);
+        Nav.NavigateTo("/repairs");
+    }
+}

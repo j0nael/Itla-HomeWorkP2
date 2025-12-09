@@ -29,22 +29,7 @@ public class InvoiceValidator : AbstractValidator<InvoiceModel>
             .NotNull()
             .WithMessage("Cada venta debe ser válida.");
 
-        // Al menos algo debe existir en la factura
-        RuleFor(x => x)
-            .Must(x => (x.Sales != null && x.Sales.Count > 0)
-                    || (x.Vehicles != null && x.Vehicles.Count > 0)
-                    || (x.Repairs != null && x.Repairs.Count > 0))
-            .WithMessage("La factura debe contener al menos una venta, vehículo o reparación.");
-
-        // ==== Vehicles ====
-        RuleFor(x => x.Vehicles)
-            .NotNull()
-            .WithMessage("La lista de vehículos no puede ser nula.");
-
-        RuleForEach(x => x.Vehicles)
-            .NotNull()
-            .WithMessage("Cada vehículo debe ser válido.");
-
+    
         // ==== Repairs ====
         RuleFor(x => x.Repairs)
             .NotNull()

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tallermecanico.infretruture.Model
 {
@@ -7,16 +8,38 @@ namespace tallermecanico.infretruture.Model
         [Key]
         public int SaleDetailId { get; set; }
 
+        // FK: Un detalle pertenece a una venta
+        [Required]
         public int SaleId { get; set; }
-        public SaleModel Sale { get; set; }
 
+        [ForeignKey(nameof(SaleId))]
+        public virtual SaleModel Sale { get; set; }
+
+        // FK: Un detalle referencia una pieza
+        [Required]
         public int SparePartId { get; set; }
-        public SparePartModel SparePart { get; set; }
 
+        [ForeignKey(nameof(SparePartId))]
+        public virtual SparePartModel SparePart { get; set; }
+
+        [Required]
         public int Quantity { get; set; }
-        public double UnitPrice { get; set; }
-        public double Subtotal => Quantity * UnitPrice;
+
+        [Required]
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal UnitPrice { get; set; }
+
+        [NotMapped]
+        public decimal Subtotal => Quantity * UnitPrice;
 
         public SaleDetailModel() { }
+
+        public SaleDetailModel(int saleId, int sparePartId, int quantity, decimal unitPrice)
+        {
+            SaleId = saleId;
+            SparePartId = sparePartId;
+            Quantity = quantity;
+            UnitPrice = unitPrice;
+        }
     }
 }

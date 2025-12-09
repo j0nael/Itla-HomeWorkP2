@@ -1,0 +1,114 @@
+﻿@page "/vehicles"
+@using TallerMecanicoBlazor.Look
+@using tallermecanico.aplication.DTOs
+@using TallerMecanicoBlazor.Frontend
+@inject VehicleService vehicleService
+@inject LookupService lookupService
+@inject NavigationManager nav
+
+<h3>Vehículos</h3>
+
+<div class="mb-3">
+    <button class="btn btn-primary" @onclick="Create">
+        <i class="fa fa-plus me-1"></i> Nuevo Vehículo
+    </button>
+</div>
+
+@if (vehicles == null)
+{
+    <p>Cargando...</p>
+}
+else if (vehicles.Count == 0)
+{
+    <p>No hay vehículos registrados.</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Placa</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Año</th>
+                <th>Color</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Factura</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var v in vehicles)
+            {
+                <tr>
+                    <td>@v.VehicleId</td>
+                    <td>@v.LicensePlate</td>
+                    <td>@v.Brand</td>
+                    <td>@v.Model</td>
+                    <td>@v.Year</td>
+                    <td>@v.Color</td>
+                    <td>@GetCustomerName(v.CustomerId)</td>
+                    <td>@GetSellerName(v.SellerId)</td>
+                    <td>@GetInvoiceNumber(v.InvoiceId)</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning" @onclick="() => Edit(v.VehicleId)">
+                            <i class="fa fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger ms-1" @onclick="() => Delete(v.VehicleId)">
+                            <i class="fa fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<VehicleDTO> vehicles;
+    List<CustomerLookupDto> customers = new();
+    List<SellerLookupDto> sellers = new();
+    List<InvoiceLookupDto> invoices = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // cargar datos principales y lookups en paralelo
+        var t1 = vehicleService.GetVehicles();
+        var t2 = lookupService.GetCustomers();
+        var t3 = lookupService.GetSellers();
+        var t4 = lookupService.GetInvoices();
+
+        await Task.WhenAll(t1, t2, t3, t4);
+
+        vehicles = t1.Result;
+        customers = t2.Result;
+        sellers = t3.Result;
+        invoices = t4.Result;
+    }
+
+    void Create() => nav.NavigateTo("/vehicles/create");
+    void Edit(int id) => nav.NavigateTo($"/vehicles/edit/{id}");
+    void Delete(int id) => nav.NavigateTo($"/vehicles/delete/{id}");
+
+    string GetCustomerName(int customerId)
+    {
+        var c = customers.FirstOrDefault(x => x.Id == customerId);
+        return c != null ? c.FullName : $"(Id:{customerId})";
+    }
+
+    string GetSellerName(int? sellerId)
+    {
+        if (!sellerId.HasValue) return "";
+        var s = sellers.FirstOrDefault(x => x.SellerId == sellerId.Value);
+        return s != null ? s.Name : $"(Id:{sellerId})";
+    }
+
+    string GetInvoiceNumber(int? invoiceId)
+    {
+        if (!invoiceId.HasValue) return "";
+        var inv = invoices.FirstOrDefault(x => x.InvoiceId == invoiceId.Value);
+        return inv != null ? inv.InvoiceNumber : $"(Id:{invoiceId})";
+    }
+}

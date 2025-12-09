@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tallermecanico.infretruture.Model
 {
@@ -10,30 +11,37 @@ namespace tallermecanico.infretruture.Model
         [Key]
         public int InvoiceId { get; set; }
 
+        // FK: Una factura pertenece a un cliente
+        [Required]
         public int CustomerId { get; set; }
+
+        [ForeignKey(nameof(CustomerId))]
+        public virtual CustomerModel Customer { get; set; }
+
+        // FK: Una factura es generada por un vendedor
+        [Required]
         public int SellerId { get; set; }
 
-        public CustomerModel Customer { get; set; }
-        public SellerModel Seller { get; set; }
+        [ForeignKey(nameof(SellerId))]
+        public virtual SellerModel Seller { get; set; }
 
         public DateTime Date { get; set; } = DateTime.Now;
 
-        public List<SaleModel> Sales { get; set; } = new List<SaleModel>();
-        public List<VehicleModel> Vehicles { get; set; } = new List<VehicleModel>();
-        public List<RepairModel> Repairs { get; set; } = new List<RepairModel>();
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Total { get; set; }
 
-      
+        // Navegación: Una factura incluye múltiples ventas
+        public virtual ICollection<SaleModel> Sales { get; set; } = new List<SaleModel>();
+
+        // Navegación: Una factura incluye múltiples reparaciones
+        public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
+
         public InvoiceModel() { }
 
-       
-        public InvoiceModel(int customerId, int sellerId, List<SaleModel> sales, List<VehicleModel> vehicles, List<RepairModel> repairs)
+        public InvoiceModel(int customerId, int sellerId)
         {
-            this.CustomerId = customerId;
-            this.SellerId = sellerId;
-            this.Date = DateTime.Now;
-            this.Sales = sales ?? new List<SaleModel>();
-            this.Vehicles = vehicles ?? new List<VehicleModel>();
-            this.Repairs = repairs ?? new List<RepairModel>();
+            CustomerId = customerId;
+            SellerId = sellerId;
         }
     }
 }

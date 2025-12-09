@@ -27,12 +27,9 @@ namespace CRUD_API.Controllers
             {
                 RepairId = r.RepairId,
                 VehicleId = r.VehicleId,
-                LicensePlate = r.LicensePlate,
                 MechanicId = r.MechanicId,
-                CustomerId = r.CustomerId,
                 InvoiceId = r.InvoiceId,
                 Description = r.Description,
-                Cost = r.Cost,
                 Date = r.Date
             }).ToList();
 
@@ -53,12 +50,12 @@ namespace CRUD_API.Controllers
             {
                 RepairId = repair.RepairId,
                 VehicleId = repair.VehicleId,
-                LicensePlate = repair.LicensePlate,
+                
                 MechanicId = repair.MechanicId,
-                CustomerId = repair.CustomerId,
+                
                 InvoiceId = repair.InvoiceId,
                 Description = repair.Description,
-                Cost = repair.Cost,
+                
                 Date = repair.Date
             };
 
@@ -71,13 +68,11 @@ namespace CRUD_API.Controllers
         {
             var repair = new RepairModel
             {
-                VehicleId = repairDTO.VehicleId,
-                LicensePlate = repairDTO.LicensePlate,
+               
+                
                 MechanicId = repairDTO.MechanicId,
-                CustomerId = repairDTO.CustomerId,
                 InvoiceId = repairDTO.InvoiceId,
                 Description = repairDTO.Description,
-                Cost = repairDTO.Cost,
                 Date = DateTime.Now
             };
 
@@ -97,13 +92,13 @@ namespace CRUD_API.Controllers
                 return NotFound($"Reparación con id {id} no encontrada");
             }
 
-            repair.VehicleId = repairDTO.VehicleId;
-            repair.LicensePlate = repairDTO.LicensePlate;
+            
+           
             repair.MechanicId = repairDTO.MechanicId;
-            repair.CustomerId = repairDTO.CustomerId;
+            
             repair.InvoiceId = repairDTO.InvoiceId;
             repair.Description = repairDTO.Description;
-            repair.Cost = repairDTO.Cost;
+           
             repair.Date = repairDTO.Date;
 
             _aPIContex.Repairs.Update(repair);

@@ -1,0 +1,54 @@
+﻿@page "/vehicles/delete/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using TallerMecanicoBlazor.Look
+@using tallermecanico.aplication.DTOs
+@inject VehicleService vehicleService
+@inject LookupService lookupService
+@inject NavigationManager nav
+
+<h3>Eliminar Vehículo</h3>
+
+@if (vehicle == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <div class="alert alert-danger">
+        <h5>¿Seguro que deseas eliminar este vehículo?</h5>
+        <p>
+            <strong>@vehicle.LicensePlate</strong> — @vehicle.Brand @vehicle.Model
+            <br />
+            Cliente: @GetCustomerName(vehicle.CustomerId)
+        </p>
+
+        <button class="btn btn-danger" @onclick="Delete">Eliminar</button>
+        <button class="btn btn-secondary ms-2" @onclick="Cancel">Cancelar</button>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    VehicleDTO vehicle;
+    List<CustomerLookupDto> customers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var t1 = lookupService.GetCustomers();
+        var t2 = vehicleService.GetVehicleById(id);
+        await Task.WhenAll(t1, t2);
+        customers = t1.Result;
+        vehicle = t2.Result;
+    }
+
+    string GetCustomerName(int customerId) =>
+        customers.FirstOrDefault(c => c.Id == customerId)?.FullName ?? $"(Id:{customerId})";
+
+    async Task Delete()
+    {
+        await vehicleService.DeleteVehicle(id);
+        nav.NavigateTo("/vehicles");
+    }
+
+    void Cancel() => nav.NavigateTo("/vehicles");
+}

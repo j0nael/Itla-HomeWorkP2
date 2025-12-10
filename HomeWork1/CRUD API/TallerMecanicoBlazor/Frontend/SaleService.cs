@@ -22,10 +22,12 @@ namespace TallerMecanicoBlazor.Frontend
             return await _http.GetFromJsonAsync<SaleDTO>($"api/sale/{id}");
         }
 
-        public async Task CreateAsync(SaleDTO sale)
+        public async Task<SaleDTO> CreateAsync(SaleDTO sale)
         {
-            await _http.PostAsJsonAsync("api/sale", sale);
+            var response = await _http.PostAsJsonAsync("api/sale", sale);
+            return await response.Content.ReadFromJsonAsync<SaleDTO>();
         }
+
 
         public async Task UpdateAsync(int id, SaleDTO sale)
         {

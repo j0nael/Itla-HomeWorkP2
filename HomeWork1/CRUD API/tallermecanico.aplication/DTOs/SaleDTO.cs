@@ -14,5 +14,7 @@ namespace tallermecanico.aplication.DTOs
         public decimal Total { get; set; }
         public DateTime Date { get; set; }
         public List<SaleDetailDTO> SaleDetails { get; set; } = new();
+        public List<SaleDetailDTO> Details { get; set; } = new();
+
     }
 }

@@ -1,0 +1,95 @@
+﻿@page "/sales/details/{Id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SaleService SaleService
+@inject NavigationManager Nav
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    SaleDTO sale = new();
+    bool loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sale = await SaleService.GetByIdAsync(Id);
+        loading = false;
+    }
+}
+
+@if (loading)
+{
+    <p>Cargando venta...</p>
+}
+else if (sale == null || sale.SaleId == 0)
+{
+    <div class="alert alert-danger">
+        No se encontró la venta.
+    </div>
+}
+else
+{
+    <div class="card p-4 shadow">
+        <h3>Detalles de Venta #@sale.SaleId</h3>
+        <hr />
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Cliente:</strong> @sale.CustomerName
+            </div>
+            <div class="col-md-6">
+                <strong>Vendedor:</strong> @sale.SellerName
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <strong>Fecha:</strong> @sale.Date.ToString("dd/MM/yyyy")
+            </div>
+            <div class="col-md-6">
+                <strong>Total:</strong> RD$ @sale.Total
+            </div>
+        </div>
+
+        <h4 class="mt-4">Detalles:</h4>
+
+        @if (sale.Details.Count == 0)
+        {
+            <p>No hay detalles registrados.</p>
+        }
+        else
+        {
+            <table class="table table-striped mt-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Pieza</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var d in sale.Details)
+                    {
+                        <tr>
+                            <td>@d.SparePartName</td>
+                            <td>@d.Quantity</td>
+                            <td>RD$ @d.UnitPrice</td>
+                            <td>RD$ @d.Subtotal</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <button class="btn btn-secondary mt-3" @onclick="GoBack">Volver</button>
+    </div>
+}
+
+@code {
+    void GoBack()
+    {
+        Nav.NavigateTo("/sales");
+    }
+}

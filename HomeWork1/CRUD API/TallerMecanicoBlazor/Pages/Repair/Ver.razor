@@ -5,7 +5,6 @@
 @inject NavigationManager Nav
 
 <h3>Reparaciones</h3>
-
 <button class="btn btn-primary" @onclick="Create">Nueva Reparación</button>
 
 @if (repairs == null)
@@ -18,7 +17,9 @@ else
         <thead>
             <tr>
                 <th>ID</th>
+                <th>Cliente</th>
                 <th>Placa</th>
+                <th>Mecánico</th>
                 <th>Costo</th>
                 <th>Fecha</th>
                 <th></th>
@@ -29,8 +30,10 @@ else
             {
                 <tr>
                     <td>@r.RepairId</td>
+                    <td>@r.CustomerName</td>
                     <td>@r.LicensePlate</td>
-                    <td>@r.Cost</td>
+                    <td>@r.MechanicName</td>
+                    <td>@r.Cost.ToString("C")</td>
                     <td>@r.Date.ToShortDateString()</td>
                     <td>
                         <button class="btn btn-warning btn-sm" @onclick="() => Edit(r.RepairId)">Editar</button>

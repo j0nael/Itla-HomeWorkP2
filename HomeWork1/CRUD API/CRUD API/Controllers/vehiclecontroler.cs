@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tallermecanico.domain.Entityes;
+using Microsoft.EntityFrameworkCore;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
 using tallermecanico.infretruture.Model;
@@ -10,133 +10,153 @@ namespace CRUD_API.Controllers
     [Route("api/[controller]")]
     public class VehicleController : ControllerBase
     {
-        private readonly CrudAPIContex _aPIContex;
+        private readonly CrudAPIContex _context;
 
-        public VehicleController(CrudAPIContex aPIContex)
+        public VehicleController(CrudAPIContex context)
         {
-            _aPIContex = aPIContex;
+            _context = context;
         }
 
-        // GET: api/Vehicle
         [HttpGet]
-        public IActionResult GetAllVehicles()
+        public async Task<IActionResult> GetAllVehicles()
         {
-            var vehicles = _aPIContex.Vehicles.ToList();
+            var vehicles = await _context.Vehicles
+                .Include(v => v.Customer)
+                .ToListAsync();
 
             var list = vehicles.Select(v => new VehicleDTO
-
-            {   VehicleId=v.VehicleId,
+            {
+                VehicleId = v.VehicleId,
                 LicensePlate = v.LicensePlate,
                 Brand = v.Brand,
                 Model = v.Model,
                 Color = v.Color,
                 Year = v.Year,
                 CustomerId = v.CustomerId,
-              
+                CustomerName = $"{v.Customer.FirstName} {v.Customer.LastName}"
             }).ToList();
 
             return Ok(list);
         }
 
-        // GET: api/Vehicle/{id}
         [HttpGet("{id}")]
-        public IActionResult GetVehicleById(int id)
+        public async Task<IActionResult> GetVehicleById(int id)
         {
-            var vehicle = _aPIContex.Vehicles.FirstOrDefault(v => v.VehicleId == id);
+            var vehicle = await _context.Vehicles
+                .Include(v => v.Customer)
+                .FirstOrDefaultAsync(v => v.VehicleId == id);
+
             if (vehicle == null)
+            {
                 return NotFound($"Vehículo con id {id} no encontrado");
+            }
 
             var vehicleDTO = new VehicleDTO
             {
-                VehicleId=vehicle.VehicleId,
+                VehicleId = vehicle.VehicleId,
                 LicensePlate = vehicle.LicensePlate,
                 Brand = vehicle.Brand,
                 Model = vehicle.Model,
                 Color = vehicle.Color,
                 Year = vehicle.Year,
                 CustomerId = vehicle.CustomerId,
-                
+                CustomerName = $"{vehicle.Customer.FirstName} {vehicle.Customer.LastName}"
             };
 
             return Ok(vehicleDTO);
         }
 
-        // POST: api/Vehicle
         [HttpPost]
-        public IActionResult CreateVehicle([FromBody] VehicleDTO vehicleDTO)
+        public async Task<IActionResult> CreateVehicle([FromBody] VehicleDTO vehicleDTO)
         {
-            var customerExists = _aPIContex.Customers.Any(c => c.Id == vehicleDTO.CustomerId);
+            // Validar que el cliente exista
+            var customerExists = await _context.Customers.AnyAsync(c => c.CustomerId == vehicleDTO.CustomerId);
             if (!customerExists)
-                return BadRequest($"El CustomerId {vehicleDTO.CustomerId} no existe.");
-
-            if (vehicleDTO.SellerId.HasValue)
             {
-                var sellerExists = _aPIContex.Sellers.Any(s => s.SellerId == vehicleDTO.SellerId.Value);
-                if (!sellerExists)
-                    return BadRequest($"El SellerId {vehicleDTO.SellerId.Value} no existe.");
+                return BadRequest($"El cliente con ID {vehicleDTO.CustomerId} no existe");
+            }
+
+            // Validar placa duplicada
+            var plateExists = await _context.Vehicles.AnyAsync(v => v.LicensePlate == vehicleDTO.LicensePlate);
+            if (plateExists)
+            {
+                return BadRequest($"La placa {vehicleDTO.LicensePlate} ya está registrada");
             }
 
             var vehicle = new VehicleModel
             {
-                VehicleId=vehicleDTO.VehicleId,
                 LicensePlate = vehicleDTO.LicensePlate,
                 Brand = vehicleDTO.Brand,
                 Model = vehicleDTO.Model,
                 Color = vehicleDTO.Color,
                 Year = vehicleDTO.Year,
-                CustomerId = vehicleDTO.CustomerId,
-               
+                CustomerId = vehicleDTO.CustomerId
             };
 
-            _aPIContex.Vehicles.Add(vehicle);
-            _aPIContex.SaveChanges();
+            _context.Vehicles.Add(vehicle);
+            await _context.SaveChangesAsync();
 
-            return Ok(vehicleDTO);
+            vehicleDTO.VehicleId = vehicle.VehicleId;
+            return CreatedAtAction(nameof(GetVehicleById), new { id = vehicle.VehicleId }, vehicleDTO);
         }
 
-        // PUT: api/Vehicle/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateVehicle(int id, [FromBody] VehicleDTO vehicleDTO)
+        public async Task<IActionResult> UpdateVehicle(int id, [FromBody] VehicleDTO vehicleDTO)
         {
-            var vehicle = _aPIContex.Vehicles.FirstOrDefault(v => v.VehicleId == id);
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.VehicleId == id);
             if (vehicle == null)
-                return NotFound($"Vehículo con id {id} no encontrado");
-
-            var customerExists = _aPIContex.Customers.Any(c => c.Id == vehicleDTO.CustomerId);
-            if (!customerExists)
-                return BadRequest($"El CustomerId {vehicleDTO.CustomerId} no existe.");
-
-            if (vehicleDTO.SellerId.HasValue)
             {
-                var sellerExists = _aPIContex.Sellers.Any(s => s.SellerId == vehicleDTO.SellerId.Value);
-                if (!sellerExists)
-                    return BadRequest($"El SellerId {vehicleDTO.SellerId.Value} no existe.");
+                return NotFound($"Vehículo con id {id} no encontrado");
             }
-            vehicle.VehicleId = vehicleDTO.VehicleId;
+
+            // Validar que el cliente exista
+            var customerExists = await _context.Customers.AnyAsync(c => c.CustomerId == vehicleDTO.CustomerId);
+            if (!customerExists)
+            {
+                return BadRequest($"El cliente con ID {vehicleDTO.CustomerId} no existe");
+            }
+
+            // Validar placa duplicada (excluyendo el vehículo actual)
+            var plateExists = await _context.Vehicles
+                .AnyAsync(v => v.LicensePlate == vehicleDTO.LicensePlate && v.VehicleId != id);
+            if (plateExists)
+            {
+                return BadRequest($"La placa {vehicleDTO.LicensePlate} ya está registrada");
+            }
+
             vehicle.LicensePlate = vehicleDTO.LicensePlate;
             vehicle.Brand = vehicleDTO.Brand;
             vehicle.Model = vehicleDTO.Model;
             vehicle.Color = vehicleDTO.Color;
             vehicle.Year = vehicleDTO.Year;
             vehicle.CustomerId = vehicleDTO.CustomerId;
-          
 
-            _aPIContex.Vehicles.Update(vehicle);
-            _aPIContex.SaveChanges();
+            _context.Vehicles.Update(vehicle);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/Vehicle/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteVehicle(int id)
+        public async Task<IActionResult> DeleteVehicle(int id)
         {
-            var vehicle = _aPIContex.Vehicles.FirstOrDefault(v => v.VehicleId == id);
-            if (vehicle == null)
-                return NotFound($"Vehículo con id {id} no encontrado");
+            var vehicle = await _context.Vehicles
+                .Include(v => v.Repairs)
+                .FirstOrDefaultAsync(v => v.VehicleId == id);
 
-            _aPIContex.Vehicles.Remove(vehicle);
-            _aPIContex.SaveChanges();
+            if (vehicle == null)
+            {
+                return NotFound($"Vehículo con id {id} no encontrado");
+            }
+
+            // Verificar si tiene reparaciones
+            if (vehicle.Repairs != null && vehicle.Repairs.Any())
+            {
+                return BadRequest($"No se puede eliminar el vehículo porque tiene {vehicle.Repairs.Count} reparación(es) asociada(s)");
+            }
+
+            _context.Vehicles.Remove(vehicle);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

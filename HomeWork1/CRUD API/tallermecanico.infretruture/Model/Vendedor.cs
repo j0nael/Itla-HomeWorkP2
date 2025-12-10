@@ -1,5 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+
 namespace tallermecanico.infretruture.Model
 {
     public class SellerModel
@@ -21,10 +22,8 @@ namespace tallermecanico.infretruture.Model
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
-        // Navegación: Un vendedor realiza múltiples ventas
+        // Navegación
         public virtual ICollection<SaleModel> Sales { get; set; } = new List<SaleModel>();
-
-        // Navegación: Un vendedor genera múltiples facturas
         public virtual ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
 
         public SellerModel() { }

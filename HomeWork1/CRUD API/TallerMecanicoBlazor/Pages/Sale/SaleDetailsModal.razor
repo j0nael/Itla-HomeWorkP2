@@ -1,0 +1,135 @@
+﻿@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SparePartService SparePartService
+
+<div class="modal fade @(Show ? "show d-block" : "")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content shadow-lg">
+
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Agregar Pieza a la Venta</h5>
+                <button type="button" class="btn-close" @onclick="Close"></button>
+            </div>
+
+            <div class="modal-body">
+
+                @if (!loaded)
+                {
+                    <p>Cargando piezas...</p>
+                }
+                else
+                {
+                    <div class="mb-3">
+                        <label class="form-label">Pieza</label>
+                        <select class="form-select" @bind="SelectedSparePartId">
+                            <option value="0">Seleccione una pieza</option>
+                            @foreach (var sp in spareParts)
+                            {
+                                <option value="@sp.SparePartId">@sp.Name</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input type="number" class="form-control"
+                               value="@detail.Quantity"
+                               min="1"
+                               @oninput="OnQuantityChanged" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Precio Unitario</label>
+                        <input type="number" class="form-control"
+                               value="@detail.UnitPrice"
+                               disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Subtotal</label>
+                        <input class="form-control" value="@detail.Subtotal" disabled />
+                    </div>
+                }
+
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="Close">Cancelar</button>
+                <button class="btn btn-success" @onclick="AddDetail" disabled="@DisableSave">Agregar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public EventCallback<bool> ShowChanged { get; set; }
+    [Parameter] public EventCallback<SaleDetailDTO> OnAddDetail { get; set; }
+
+    private SaleDetailDTO detail = new();
+    private List<SparePartDTO> spareParts = new();
+    private bool loaded = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Show)
+        {
+            await LoadSpareParts();
+            ResetForm();
+        }
+    }
+
+    private async Task LoadSpareParts()
+    {
+        spareParts = await SparePartService.GetAllAsync();
+        loaded = true;
+    }
+
+    private void ResetForm()
+    {
+        detail = new SaleDetailDTO
+        {
+            Quantity = 1
+        };
+    }
+
+    // Nueva propiedad para manejar el select sin usar onchange duplicado
+    private int SelectedSparePartId
+    {
+        get => detail.SparePartId;
+        set
+        {
+            detail.SparePartId = value;
+            var sp = spareParts.FirstOrDefault(x => x.SparePartId == value);
+            if (sp != null)
+            {
+                detail.UnitPrice = sp.UnitPrice;
+            }
+        }
+    }
+
+    private void OnQuantityChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int qty))
+        {
+            detail.Quantity = qty;
+            // Subtotal se calcula automáticamente desde SaleDetailDTO
+        }
+    }
+
+    private bool DisableSave =>
+        detail.SparePartId == 0 ||
+        detail.Quantity <= 0;
+
+    private async Task AddDetail()
+    {
+        await OnAddDetail.InvokeAsync(detail);
+        await Close();
+    }
+
+    private async Task Close()
+    {
+        Show = false;
+        await ShowChanged.InvokeAsync(false);
+    }
+}

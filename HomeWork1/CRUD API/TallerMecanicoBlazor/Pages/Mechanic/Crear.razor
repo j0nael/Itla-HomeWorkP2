@@ -1,0 +1,37 @@
+﻿@page "/mechanics/create"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject MechanicService MechanicService
+@inject NavigationManager Nav
+
+<h3>Nuevo Mecánico</h3>
+
+<EditForm Model="mechanic" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Nombre:</label>
+        <InputText class="form-control" @bind-Value="mechanic.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Especialidad:</label>
+        <InputText class="form-control" @bind-Value="mechanic.Specialty" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancelar</button>
+</EditForm>
+
+@code {
+    MechanicDTO mechanic = new();
+
+    async Task Save()
+    {
+        await MechanicService.CreateAsync(mechanic);
+        Nav.NavigateTo("/mechanics");
+    }
+
+    void Cancel() => Nav.NavigateTo("/mechanics");
+}

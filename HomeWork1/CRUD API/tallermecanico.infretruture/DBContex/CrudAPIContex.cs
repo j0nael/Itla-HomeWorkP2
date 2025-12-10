@@ -32,10 +32,10 @@ namespace tallermecanico.infretruture.DBContex
                 // ==================== CUSTOMER ====================
                 modelBuilder.Entity<CustomerModel>(entity =>
                 {
-                    entity.ToTable("Customers");
-                    entity.HasKey(e => e.Id);
+                   
+                    entity.HasKey(e => e.CustomerId);
 
-                    entity.Property(e => e.Id).HasColumnName("CustomerId");
+                    entity.Property(e => e.CustomerId).HasColumnName("CustomerId");
                     entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
                     entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
                     entity.Property(e => e.Email).HasMaxLength(150);

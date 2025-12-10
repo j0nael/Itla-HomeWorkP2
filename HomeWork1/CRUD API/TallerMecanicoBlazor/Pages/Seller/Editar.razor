@@ -1,0 +1,60 @@
+﻿@page "/sellers/edit/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SellerService SellerService
+@inject NavigationManager Nav
+
+<h3>Editar Vendedor</h3>
+
+@if (seller == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="seller" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Nombre:</label>
+            <InputText class="form-control" @bind-Value="seller.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label>Apellido:</label>
+            <InputText class="form-control" @bind-Value="seller.LastName" />
+        </div>
+
+        <div class="mb-3">
+            <label>Email:</label>
+            <InputText class="form-control" @bind-Value="seller.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label>Teléfono:</label>
+            <InputText class="form-control" @bind-Value="seller.PhoneNumber" />
+        </div>
+
+        <button class="btn btn-primary">Guardar Cambios</button>
+        <button class="btn btn-secondary" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    SellerDTO? seller;
+
+    protected override async Task OnInitializedAsync()
+    {
+        seller = await SellerService.GetByIdAsync(id);
+    }
+
+    async Task Save()
+    {
+        await SellerService.UpdateAsync(id, seller);
+        Nav.NavigateTo("/sellers");
+    }
+
+    void Cancel() => Nav.NavigateTo("/sellers");
+}

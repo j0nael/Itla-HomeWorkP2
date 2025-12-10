@@ -1,0 +1,60 @@
+﻿@page "/sellers"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SellerService SellerService
+@inject NavigationManager Nav
+
+<h3>Vendedores</h3>
+<button class="btn btn-primary" @onclick="Create">Nuevo Vendedor</button>
+
+@if (sellers == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var s in sellers)
+            {
+                <tr>
+                    <td>@s.SellerId</td>
+                    <td>@s.FirstName @s.LastName</td>
+                    <td>@s.Email</td>
+                    <td>@s.PhoneNumber</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Edit(s.SellerId)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(s.SellerId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<SellerDTO> sellers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sellers = await SellerService.GetAllAsync();
+    }
+
+    void Create() => Nav.NavigateTo("/sellers/create");
+    void Edit(int id) => Nav.NavigateTo($"/sellers/edit/{id}");
+
+    async Task Delete(int id)
+    {
+        await SellerService.DeleteAsync(id);
+        sellers = await SellerService.GetAllAsync();
+    }
+}

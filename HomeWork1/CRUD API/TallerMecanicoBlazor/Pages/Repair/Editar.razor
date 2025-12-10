@@ -2,11 +2,13 @@
 @using TallerMecanicoBlazor.Frontend
 @using tallermecanico.aplication.DTOs
 @inject RepairService RepairService
+@inject MechanicService MechanicService
+@inject VehicleService VehicleService
 @inject NavigationManager Nav
 
 <h3>Editar Reparación</h3>
 
-@if (repair == null)
+@if (repair == null || mechanics == null || vehicles == null)
 {
     <p>Cargando...</p>
 }
@@ -14,33 +16,56 @@ else
 {
     <EditForm Model="repair" OnValidSubmit="Save">
         <DataAnnotationsValidator />
+        <ValidationSummary />
 
-        <div>
-            <label>Placa:</label>
-            <InputText class="form-control" @bind-Value="repair.LicensePlate" />
+        <div class="mb-3">
+            <label>Vehículo (Placa):</label>
+            <InputSelect class="form-control" @bind-Value="repair.VehicleId">
+                <option value="0">-- Seleccione un vehículo --</option>
+                @foreach (var v in vehicles)
+                {
+                    <option value="@v.VehicleId">@v.LicensePlate - @v.Brand @v.Model (@v.CustomerName)</option>
+                }
+            </InputSelect>
         </div>
 
-        <div>
+        <div class="mb-3">
+            <label>Mecánico:</label>
+            <InputSelect class="form-control" @bind-Value="repair.MechanicId">
+                <option value="0">-- Seleccione un mecánico --</option>
+                @foreach (var m in mechanics)
+                {
+                    <option value="@m.MechanicId">@m.FirstName - @m.Specialty</option>
+                }
+            </InputSelect>
+        </div>
+
+        <div class="mb-3">
             <label>Descripción:</label>
-            <InputTextArea class="form-control" @bind-Value="repair.Description" />
+            <InputTextArea class="form-control" @bind-Value="repair.Description" rows="3" />
         </div>
 
-        <div>
+        <div class="mb-3">
             <label>Costo:</label>
             <InputNumber class="form-control" @bind-Value="repair.Cost" />
         </div>
 
-        <button class="btn btn-primary mt-3" type="submit">Guardar Cambios</button>
+        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+        <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancelar</button>
     </EditForm>
 }
 
 @code {
     [Parameter] public int id { get; set; }
     RepairDTO? repair;
+    List<MechanicDTO> mechanics;
+    List<VehicleDTO> vehicles;
 
     protected override async Task OnInitializedAsync()
     {
         repair = await RepairService.GetByIdAsync(id);
+        mechanics = await MechanicService.GetAllAsync();
+        vehicles = await VehicleService.GetVehicles();
     }
 
     async Task Save()
@@ -48,4 +73,6 @@ else
         await RepairService.UpdateAsync(id, repair);
         Nav.NavigateTo("/repairs");
     }
+
+    void Cancel() => Nav.NavigateTo("/repairs");
 }

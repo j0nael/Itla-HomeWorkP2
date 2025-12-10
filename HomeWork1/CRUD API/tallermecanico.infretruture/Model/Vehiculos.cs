@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace tallermecanico.infretruture.Model
 {
     public class VehicleModel
@@ -26,14 +27,14 @@ namespace tallermecanico.infretruture.Model
 
         public int Year { get; set; }
 
-        // FK: Un vehículo pertenece a un cliente
+        // FK: Vehículo pertenece a un cliente
         [Required]
         public int CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
         public virtual CustomerModel Customer { get; set; }
 
-        // Navegación: Un vehículo tiene múltiples reparaciones
+        // Navegación
         public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
 
         public VehicleModel() { }

@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
-
 namespace tallermecanico.infretruture.Model
 {
-
     public class CustomerModel
     {
         [Key]
-        [Column("CustomerId")]
-        public int Id { get; set; }
+      
+        public int CustomerId { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -28,13 +26,9 @@ namespace tallermecanico.infretruture.Model
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
-        // Navegación: Un cliente tiene múltiples vehículos
+        // Navegación
         public virtual ICollection<VehicleModel> Vehicles { get; set; } = new List<VehicleModel>();
-
-        // Navegación: Un cliente tiene múltiples ventas
         public virtual ICollection<SaleModel> Sales { get; set; } = new List<SaleModel>();
-
-        // Navegación: Un cliente tiene múltiples facturas
         public virtual ICollection<InvoiceModel> Invoices { get; set; } = new List<InvoiceModel>();
 
         public CustomerModel() { }

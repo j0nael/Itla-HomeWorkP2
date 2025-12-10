@@ -1,33 +1,33 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+
 namespace tallermecanico.infretruture.Model
 {
-  
-  public class RepairModel
+    public class RepairModel
     {
         [Key]
         public int RepairId { get; set; }
 
-        // FK: Una reparación pertenece a un vehículo
+        // FK: Reparación pertenece a un vehículo
         [Required]
         public int VehicleId { get; set; }
 
         [ForeignKey(nameof(VehicleId))]
         public virtual VehicleModel Vehicle { get; set; }
 
-        // FK: Una reparación es realizada por un mecánico
+        // FK: Reparación realizada por un mecánico
         [Required]
         public int MechanicId { get; set; }
 
         [ForeignKey(nameof(MechanicId))]
         public virtual MechanicModel Mechanic { get; set; }
 
-        // FK: Una reparación puede estar en una factura (opcional)
+        // FK: Reparación puede estar en una factura (opcional)
         public int? InvoiceId { get; set; }
 
         [ForeignKey(nameof(InvoiceId))]
-        public virtual InvoiceModel Invoice { get; set; }
+        public virtual InvoiceModel? Invoice { get; set; } 
 
         [Required]
         [MaxLength(500)]

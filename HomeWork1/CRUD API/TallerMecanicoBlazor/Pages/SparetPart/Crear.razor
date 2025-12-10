@@ -1,0 +1,60 @@
+﻿@page "/spareparts/create"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SparePartService SparePartService
+@inject NavigationManager Nav
+
+<h3>Nuevo Repuesto</h3>
+
+<EditForm Model="sparePart" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Nombre:</label>
+        <InputText class="form-control" @bind-Value="sparePart.Name" />
+    </div>
+
+    <div class="mb-3">
+        <label>Cantidad Inicial:</label>
+        <InputNumber class="form-control" @bind-Value="sparePart.InitialQuantity" />
+    </div>
+
+    <div class="mb-3">
+        <label>Cantidad Disponible:</label>
+        <InputNumber class="form-control" @bind-Value="sparePart.Quantity" />
+    </div>
+
+    <div class="mb-3">
+        <label>Precio Unitario:</label>
+        <InputNumber class="form-control" @bind-Value="sparePart.UnitPrice" />
+    </div>
+
+    <div class="mb-3">
+        <label>Precio Mayorista:</label>
+        <InputNumber class="form-control" @bind-Value="sparePart.WholesalePrice" />
+    </div>
+
+    <div class="mb-3">
+        <label>Fecha de Entrada:</label>
+        <InputDate class="form-control" @bind-Value="sparePart.EntryDate" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancelar</button>
+</EditForm>
+
+@code {
+    SparePartDTO sparePart = new()
+    {
+        EntryDate = DateTime.Now
+    };
+
+    async Task Save()
+    {
+        await SparePartService.CreateAsync(sparePart);
+        Nav.NavigateTo("/spareparts");
+    }
+
+    void Cancel() => Nav.NavigateTo("/spareparts");
+}

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tallermecanico.infretruture.Model;
+using Microsoft.EntityFrameworkCore;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
-using tallermecanico.infretruture.DBContex;
+using tallermecanico.infretruture.Model;
 
 namespace CRUD_API.Controllers
 {
@@ -10,112 +10,159 @@ namespace CRUD_API.Controllers
     [Route("api/[controller]")]
     public class SaleController : ControllerBase
     {
-        private readonly CrudAPIContex _aPIContex;
+        private readonly CrudAPIContex _context;
 
-        public SaleController(CrudAPIContex aPIContex)
+        public SaleController(CrudAPIContex context)
         {
-            _aPIContex = aPIContex;
+            _context = context;
         }
 
-        // GET: api/Sale
+        // ------------------------------------------------------------
+        // GET ALL
+        // ------------------------------------------------------------
         [HttpGet]
-        public IActionResult GetAllSales()
+        public async Task<IActionResult> GetAllSales()
         {
-            var sales = _aPIContex.Sales.ToList();
+            var sales = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Seller)
+                .ToListAsync();
 
             var list = sales.Select(s => new SaleDTO
             {
+                SaleId = s.SaleId,
                 CustomerId = s.CustomerId,
+                CustomerName = $"{s.Customer.FirstName} {s.Customer.LastName}",
                 SellerId = s.SellerId,
-               
-                Date = s.Date
+                SellerName = $"{s.Seller.FirstName} {s.Seller.LastName}",
+                Total = s.Total,
+                Date = s.Date,
+                InvoiceId = s.InvoiceId
             }).ToList();
 
             return Ok(list);
         }
 
-        // GET: api/Sale/{id}
+        // ------------------------------------------------------------
+        // GET BY ID
+        // ------------------------------------------------------------
         [HttpGet("{id}")]
-        public IActionResult GetSaleById(int id)
+        public async Task<IActionResult> GetSaleById(int id)
         {
-            var sale = _aPIContex.Sales.FirstOrDefault(s => s.SaleId == id);
+            var sale = await _context.Sales
+                .Include(s => s.Customer)
+                .Include(s => s.Seller)
+                .Include(s => s.SaleDetails)
+                    .ThenInclude(sd => sd.SparePart)
+                .FirstOrDefaultAsync(s => s.SaleId == id);
+
             if (sale == null)
                 return NotFound($"Venta con id {id} no encontrada");
 
             var saleDTO = new SaleDTO
             {
+                SaleId = sale.SaleId,
                 CustomerId = sale.CustomerId,
+                CustomerName = $"{sale.Customer.FirstName} {sale.Customer.LastName}",
                 SellerId = sale.SellerId,
-               
-                Date = sale.Date
+                SellerName = $"{sale.Seller.FirstName} {sale.Seller.LastName}",
+                Total = sale.Total,
+                Date = sale.Date,
+                InvoiceId = sale.InvoiceId
             };
 
             return Ok(saleDTO);
         }
 
-        // POST: api/Sale
+        // ------------------------------------------------------------
+        // CREATE
+        // ------------------------------------------------------------
         [HttpPost]
-        public IActionResult CreateSale([FromBody] SaleDTO saleDTO)
+        public async Task<IActionResult> CreateSale([FromBody] SaleDTO saleDTO)
         {
-            var customerExists = _aPIContex.Customers.Any(c => c.Id == saleDTO.CustomerId);
-            if (!customerExists)
-                return BadRequest($"El CustomerId {saleDTO.CustomerId} no existe.");
+            if (!await _context.Customers.AnyAsync(c => c.CustomerId == saleDTO.CustomerId))
+                return BadRequest($"El cliente con ID {saleDTO.CustomerId} no existe");
 
-            var sellerExists = _aPIContex.Sellers.Any(s => s.SellerId == saleDTO.SellerId);
-            if (!sellerExists)
-                return BadRequest($"El SellerId {saleDTO.SellerId} no existe.");
+            if (!await _context.Sellers.AnyAsync(s => s.SellerId == saleDTO.SellerId))
+                return BadRequest($"El vendedor con ID {saleDTO.SellerId} no existe");
+
+            if (saleDTO.InvoiceId == 0)
+                saleDTO.InvoiceId = null;
 
             var sale = new SaleModel
             {
                 CustomerId = saleDTO.CustomerId,
                 SellerId = saleDTO.SellerId,
-                
-                Date = saleDTO.Date
+                Total = saleDTO.Total,
+                Date = DateTime.Now,
+                InvoiceId = saleDTO.InvoiceId
             };
 
-            _aPIContex.Sales.Add(sale);
-            _aPIContex.SaveChanges();
+            _context.Sales.Add(sale);
+            await _context.SaveChangesAsync();
 
-            return Ok(saleDTO);
+            saleDTO.SaleId = sale.SaleId;
+
+            return CreatedAtAction(nameof(GetSaleById), new { id = sale.SaleId }, saleDTO);
         }
 
-        // PUT: api/Sale/{id}
+        // ------------------------------------------------------------
+        // UPDATE
+        // ------------------------------------------------------------
         [HttpPut("{id}")]
-        public IActionResult UpdateSale(int id, [FromBody] SaleDTO saleDTO)
+        public async Task<IActionResult> UpdateSale(int id, [FromBody] SaleDTO saleDTO)
         {
-            var sale = _aPIContex.Sales.FirstOrDefault(s => s.SaleId == id);
+            var sale = await _context.Sales.FindAsync(id);
             if (sale == null)
                 return NotFound($"Venta con id {id} no encontrada");
 
-            var customerExists = _aPIContex.Customers.Any(c => c.Id == saleDTO.CustomerId);
-            if (!customerExists)
-                return BadRequest($"El CustomerId {saleDTO.CustomerId} no existe.");
+            if (!await _context.Customers.AnyAsync(c => c.CustomerId == saleDTO.CustomerId))
+                return BadRequest($"El cliente con ID {saleDTO.CustomerId} no existe");
 
-            var sellerExists = _aPIContex.Sellers.Any(s => s.SellerId == saleDTO.SellerId);
-            if (!sellerExists)
-                return BadRequest($"El SellerId {saleDTO.SellerId} no existe.");
+            if (!await _context.Sellers.AnyAsync(s => s.SellerId == saleDTO.SellerId))
+                return BadRequest($"El vendedor con ID {saleDTO.SellerId} no existe");
 
             sale.CustomerId = saleDTO.CustomerId;
             sale.SellerId = saleDTO.SellerId;
-            
-            sale.Date = saleDTO.Date;
+            sale.Total = saleDTO.Total;
+            sale.InvoiceId = saleDTO.InvoiceId;
 
-            _aPIContex.Sales.Update(sale);
-            _aPIContex.SaveChanges();
+            _context.Sales.Update(sale);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/Sale/{id}
+        // ------------------------------------------------------------
+        // DELETE (RESTORES INVENTORY)
+        // ------------------------------------------------------------
         [HttpDelete("{id}")]
-        public IActionResult DeleteSale(int id)
+        public async Task<IActionResult> DeleteSale(int id)
         {
-            var sale = _aPIContex.Sales.FirstOrDefault(s => s.SaleId == id);
+            var sale = await _context.Sales
+                .Include(s => s.SaleDetails)
+                    .ThenInclude(sd => sd.SparePart)
+                .FirstOrDefaultAsync(s => s.SaleId == id);
+
             if (sale == null)
                 return NotFound($"Venta con id {id} no encontrada");
 
-            _aPIContex.Sales.Remove(sale);
-            _aPIContex.SaveChanges();
+            // ---------------------------------------------------------------------
+            // RESTAURAR INVENTARIO
+            // ---------------------------------------------------------------------
+            foreach (var detail in sale.SaleDetails)
+            {
+                detail.SparePart.Quantity += detail.Quantity;
+                _context.SpareParts.Update(detail.SparePart);
+            }
+
+            // Eliminar detalles
+            _context.SaleDetails.RemoveRange(sale.SaleDetails);
+
+            // Eliminar venta
+            _context.Sales.Remove(sale);
+
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

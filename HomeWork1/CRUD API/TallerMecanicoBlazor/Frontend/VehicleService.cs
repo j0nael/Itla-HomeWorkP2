@@ -1,32 +1,46 @@
 ﻿using System.Net.Http.Json;
 using tallermecanico.aplication.DTOs;
-namespace TallerMecanicoBlazor.Frontend;
-public class VehicleService
+
+namespace TallerMecanicoBlazor.Frontend
 {
-    private readonly HttpClient _http;
-    public VehicleService(HttpClient http) => _http = http;
-
-    public async Task<List<VehicleDTO>> GetVehicles()
-        => await _http.GetFromJsonAsync<List<VehicleDTO>>("api/Vehicle") ?? new List<VehicleDTO>();
-
-    public async Task<VehicleDTO?> GetVehicleById(int id)
-        => await _http.GetFromJsonAsync<VehicleDTO>($"api/Vehicle/{id}");
-
-    public async Task<bool> CreateVehicle(VehicleDTO vehicle)
+    public class VehicleService
     {
-        var res = await _http.PostAsJsonAsync("api/Vehicle", vehicle);
-        return res.IsSuccessStatusCode;
-    }
+        private readonly HttpClient _http;
+        private readonly ApiConfig _config;
 
-    public async Task<bool> UpdateVehicle(int id, VehicleDTO vehicle)
-    {
-        var res = await _http.PutAsJsonAsync($"api/Vehicle/{id}", vehicle);
-        return res.IsSuccessStatusCode;
-    }
+        public VehicleService(HttpClient http, ApiConfig config)
+        {
+            _http = http;
+            _config = config;
+        }
 
-    public async Task<bool> DeleteVehicle(int id)
-    {
-        var res = await _http.DeleteAsync($"api/Vehicle/{id}");
-        return res.IsSuccessStatusCode;
+        public async Task<List<VehicleDTO>> GetVehicles()
+        {
+            var result = await _http.GetFromJsonAsync<List<VehicleDTO>>($"{_config.ApiBaseUrl}/api/vehicle");
+            return result ?? new List<VehicleDTO>();
+        }
+
+        public async Task<VehicleDTO?> GetVehicleById(int id)
+        {
+            return await _http.GetFromJsonAsync<VehicleDTO>($"{_config.ApiBaseUrl}/api/vehicle/{id}");
+        }
+
+        public async Task<bool> CreateVehicle(VehicleDTO vehicle)
+        {
+            var response = await _http.PostAsJsonAsync($"{_config.ApiBaseUrl}/api/vehicle", vehicle);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> UpdateVehicle(int id, VehicleDTO vehicle)
+        {
+            var response = await _http.PutAsJsonAsync($"{_config.ApiBaseUrl}/api/vehicle/{id}", vehicle);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteVehicle(int id)
+        {
+            var response = await _http.DeleteAsync($"{_config.ApiBaseUrl}/api/vehicle/{id}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }

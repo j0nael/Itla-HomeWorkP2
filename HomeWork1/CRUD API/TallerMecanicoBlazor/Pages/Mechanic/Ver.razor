@@ -1,0 +1,58 @@
+﻿@page "/mechanics"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject MechanicService MechanicService
+@inject NavigationManager Nav
+
+<h3>Mecánicos</h3>
+<button class="btn btn-primary" @onclick="Create">Nuevo Mecánico</button>
+
+@if (mechanics == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var m in mechanics)
+            {
+                <tr>
+                    <td>@m.MechanicId</td>
+                    <td>@m.FirstName</td>
+                    <td>@m.Specialty</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Edit(m.MechanicId)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(m.MechanicId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<MechanicDTO> mechanics;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mechanics = await MechanicService.GetAllAsync();
+    }
+
+    void Create() => Nav.NavigateTo("/mechanics/create");
+    void Edit(int id) => Nav.NavigateTo($"/mechanics/edit/{id}");
+
+    async Task Delete(int id)
+    {
+        await MechanicService.DeleteAsync(id);
+        mechanics = await MechanicService.GetAllAsync();
+    }
+}

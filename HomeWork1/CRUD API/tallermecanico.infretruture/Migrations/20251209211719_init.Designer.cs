@@ -12,8 +12,8 @@ using tallermecanico.infretruture.DBContex;
 namespace tallermecanico.infretruture.Migrations
 {
     [DbContext(typeof(CrudAPIContex))]
-    [Migration("20251208233608_qqqqqqqq")]
-    partial class qqqqqqqq
+    [Migration("20251209211719_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,87 +25,14 @@ namespace tallermecanico.infretruture.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("SaleModel", b =>
-                {
-                    b.Property<int>("SaleId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SaleId"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Date")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int?>("InvoiceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SellerId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Total")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("SaleId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("Date");
-
-                    b.HasIndex("InvoiceId");
-
-                    b.HasIndex("SellerId");
-
-                    b.ToTable("Sales", (string)null);
-                });
-
-            modelBuilder.Entity("SparePartModel", b =>
-                {
-                    b.Property<int>("SparePartId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SparePartId"));
-
-                    b.Property<DateTime>("EntryDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("InitialQuantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("WholesalePrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("SparePartId");
-
-                    b.ToTable("SpareParts", (string)null);
-                });
-
             modelBuilder.Entity("tallermecanico.infretruture.Model.CustomerModel", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("CustomerId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("CustomerId");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CustomerId"));
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -127,11 +54,11 @@ namespace tallermecanico.infretruture.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CustomerId");
 
                     b.HasIndex("Email");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.InvoiceModel", b =>
@@ -262,6 +189,44 @@ namespace tallermecanico.infretruture.Migrations
                     b.ToTable("SaleDetails", (string)null);
                 });
 
+            modelBuilder.Entity("tallermecanico.infretruture.Model.SaleModel", b =>
+                {
+                    b.Property<int>("SaleId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SaleId"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int?>("InvoiceId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SellerId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("SaleId");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Date");
+
+                    b.HasIndex("InvoiceId");
+
+                    b.HasIndex("SellerId");
+
+                    b.ToTable("Sales", (string)null);
+                });
+
             modelBuilder.Entity("tallermecanico.infretruture.Model.SellerModel", b =>
                 {
                     b.Property<int>("SellerId")
@@ -293,6 +258,41 @@ namespace tallermecanico.infretruture.Migrations
                     b.HasKey("SellerId");
 
                     b.ToTable("Sellers", (string)null);
+                });
+
+            modelBuilder.Entity("tallermecanico.infretruture.Model.SparePartModel", b =>
+                {
+                    b.Property<int>("SparePartId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SparePartId"));
+
+                    b.Property<DateTime>("EntryDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
+
+                    b.Property<int>("InitialQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("WholesalePrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("SparePartId");
+
+                    b.ToTable("SpareParts", (string)null);
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.VehicleModel", b =>
@@ -337,32 +337,6 @@ namespace tallermecanico.infretruture.Migrations
                         .IsUnique();
 
                     b.ToTable("Vehicles", (string)null);
-                });
-
-            modelBuilder.Entity("SaleModel", b =>
-                {
-                    b.HasOne("tallermecanico.infretruture.Model.CustomerModel", "Customer")
-                        .WithMany("Sales")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("tallermecanico.infretruture.Model.InvoiceModel", "Invoice")
-                        .WithMany("Sales")
-                        .HasForeignKey("InvoiceId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("tallermecanico.infretruture.Model.SellerModel", "Seller")
-                        .WithMany("Sales")
-                        .HasForeignKey("SellerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("Invoice");
-
-                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.InvoiceModel", b =>
@@ -412,13 +386,13 @@ namespace tallermecanico.infretruture.Migrations
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.SaleDetailModel", b =>
                 {
-                    b.HasOne("SaleModel", "Sale")
+                    b.HasOne("tallermecanico.infretruture.Model.SaleModel", "Sale")
                         .WithMany("SaleDetails")
                         .HasForeignKey("SaleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("SparePartModel", "SparePart")
+                    b.HasOne("tallermecanico.infretruture.Model.SparePartModel", "SparePart")
                         .WithMany("SaleDetails")
                         .HasForeignKey("SparePartId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -427,6 +401,32 @@ namespace tallermecanico.infretruture.Migrations
                     b.Navigation("Sale");
 
                     b.Navigation("SparePart");
+                });
+
+            modelBuilder.Entity("tallermecanico.infretruture.Model.SaleModel", b =>
+                {
+                    b.HasOne("tallermecanico.infretruture.Model.CustomerModel", "Customer")
+                        .WithMany("Sales")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("tallermecanico.infretruture.Model.InvoiceModel", "Invoice")
+                        .WithMany("Sales")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("tallermecanico.infretruture.Model.SellerModel", "Seller")
+                        .WithMany("Sales")
+                        .HasForeignKey("SellerId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Invoice");
+
+                    b.Navigation("Seller");
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.VehicleModel", b =>
@@ -438,16 +438,6 @@ namespace tallermecanico.infretruture.Migrations
                         .IsRequired();
 
                     b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("SaleModel", b =>
-                {
-                    b.Navigation("SaleDetails");
-                });
-
-            modelBuilder.Entity("SparePartModel", b =>
-                {
-                    b.Navigation("SaleDetails");
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.CustomerModel", b =>
@@ -471,11 +461,21 @@ namespace tallermecanico.infretruture.Migrations
                     b.Navigation("Repairs");
                 });
 
+            modelBuilder.Entity("tallermecanico.infretruture.Model.SaleModel", b =>
+                {
+                    b.Navigation("SaleDetails");
+                });
+
             modelBuilder.Entity("tallermecanico.infretruture.Model.SellerModel", b =>
                 {
                     b.Navigation("Invoices");
 
                     b.Navigation("Sales");
+                });
+
+            modelBuilder.Entity("tallermecanico.infretruture.Model.SparePartModel", b =>
+                {
+                    b.Navigation("SaleDetails");
                 });
 
             modelBuilder.Entity("tallermecanico.infretruture.Model.VehicleModel", b =>

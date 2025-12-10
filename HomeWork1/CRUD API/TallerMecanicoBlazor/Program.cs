@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using tallermecanico.aplication.Contract;
 using TallerMecanicoBlazor;
 
 using TallerMecanicoBlazor.Frontend;
@@ -13,6 +12,13 @@ builder.Services.AddScoped<CustomerService>();
 builder.Services.AddScoped<VehicleService>();
 builder.Services.AddScoped<RepairService>();
 builder.Services.AddScoped<LookupService>();
+builder.Services.AddScoped<MechanicService>();
+builder.Services.AddScoped<SellerService>();
+builder.Services.AddScoped<SparePartService>();
+builder.Services.AddScoped<SaleService>();
+builder.Services.AddScoped<SaleDetailService>();
+
+
 
 builder.Services.AddScoped(sp => new HttpClient
 {

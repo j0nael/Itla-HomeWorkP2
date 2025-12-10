@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace tallermecanico.aplication.DTOs
+﻿namespace tallermecanico.aplication.DTOs
 {
     public class VehicleDTO
     {
@@ -10,9 +8,10 @@ namespace tallermecanico.aplication.DTOs
         public string Model { get; set; }
         public string Color { get; set; }
         public int Year { get; set; }
-
         public int CustomerId { get; set; }
+        public string CustomerName { get; set; }
         public int? SellerId { get; set; }
+        public string SellerName { get; set; }
         public int? InvoiceId { get; set; }
     }
 }

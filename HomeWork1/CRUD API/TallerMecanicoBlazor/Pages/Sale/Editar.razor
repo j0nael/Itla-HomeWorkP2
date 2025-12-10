@@ -1,0 +1,63 @@
+﻿@page "/sales/edit/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SaleService SaleService
+@inject CustomerService CustomerService
+@inject SellerService SellerService
+@inject NavigationManager Nav
+
+<h3>Editar Venta</h3>
+
+@if (sale == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <div class="card p-4">
+
+        <div class="mb-3">
+            <label>Cliente</label>
+            <select class="form-select" @bind="sale.CustomerId">
+                @foreach (var c in customers)
+                {
+                    <option value="@c.CustomerId">@c.FirstName @c.LastName</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Vendedor</label>
+            <select class="form-select" @bind="sale.SellerId">
+                @foreach (var s in sellers)
+                {
+                    <option value="@s.SellerId">@s.FirstName @s.LastName</option>
+                }
+            </select>
+        </div>
+
+        <button class="btn btn-warning" @onclick="Update">
+            Guardar Cambios
+        </button>
+    </div>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    SaleDTO sale = new();
+    List<CustomerDTO> customers = new();
+    List<SellerDTO> sellers = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        sale = await SaleService.GetByIdAsync(id);
+        customers = await CustomerService.GetAll();
+        sellers = await SellerService.GetAllAsync();
+    }
+
+    async Task Update()
+    {
+        await SaleService.UpdateAsync(id, sale);
+        Nav.NavigateTo("/sales");
+    }
+}

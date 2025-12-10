@@ -8,14 +8,14 @@ namespace tallermecanico.infretruture.Model
         [Key]
         public int SaleDetailId { get; set; }
 
-        // FK: Un detalle pertenece a una venta
+        // FK: Detalle pertenece a una venta
         [Required]
         public int SaleId { get; set; }
 
         [ForeignKey(nameof(SaleId))]
         public virtual SaleModel Sale { get; set; }
 
-        // FK: Un detalle referencia una pieza
+        // FK: Detalle referencia una pieza
         [Required]
         public int SparePartId { get; set; }
 

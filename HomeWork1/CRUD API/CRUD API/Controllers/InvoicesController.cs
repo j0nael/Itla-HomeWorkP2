@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tallermecanico.domain.Entityes;
+using Microsoft.EntityFrameworkCore;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
 using tallermecanico.infretruture.Model;
@@ -10,34 +10,50 @@ namespace CRUD_API.Controllers
     [Route("api/[controller]")]
     public class InvoiceController : ControllerBase
     {
-        private readonly CrudAPIContex _aPIContex;
+        private readonly CrudAPIContex _context;
 
-        public InvoiceController(CrudAPIContex aPIContex)
+        public InvoiceController(CrudAPIContex context)
         {
-            _aPIContex = aPIContex;
+            _context = context;
         }
 
-        // GET: api/Invoice
         [HttpGet]
-        public IActionResult GetAllInvoices()
+        public async Task<IActionResult> GetAllInvoices()
         {
-            var invoices = _aPIContex.Invoices.ToList();
+            var invoices = await _context.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.Seller)
+                .Include(i => i.Sales)
+                .Include(i => i.Repairs)
+                .ToListAsync();
+
             var list = invoices.Select(i => new InvoiceDTO
             {
                 InvoiceId = i.InvoiceId,
                 CustomerId = i.CustomerId,
+                CustomerName = $"{i.Customer.FirstName} {i.Customer.LastName}",
                 SellerId = i.SellerId,
-                Date = i.Date
+                SellerName = $"{i.Seller.FirstName} {i.Seller.LastName}",
+                Date = i.Date,
+                Total = (double)i.Total,
+                SalesCount = i.Sales?.Count ?? 0,
+                RepairsCount = i.Repairs?.Count ?? 0
             }).ToList();
 
             return Ok(list);
         }
 
-        // GET: api/Invoice/{id}
         [HttpGet("{id}")]
-        public IActionResult GetInvoiceById(int id)
+        public async Task<IActionResult> GetInvoiceById(int id)
         {
-            var invoice = _aPIContex.Invoices.FirstOrDefault(i => i.InvoiceId == id);
+            var invoice = await _context.Invoices
+                .Include(i => i.Customer)
+                .Include(i => i.Seller)
+                .Include(i => i.Sales)
+                    .ThenInclude(s => s.SaleDetails)
+                .Include(i => i.Repairs)
+                .FirstOrDefaultAsync(i => i.InvoiceId == id);
+
             if (invoice == null)
             {
                 return NotFound($"Factura con id {id} no encontrada");
@@ -47,64 +63,142 @@ namespace CRUD_API.Controllers
             {
                 InvoiceId = invoice.InvoiceId,
                 CustomerId = invoice.CustomerId,
+                CustomerName = $"{invoice.Customer.FirstName} {invoice.Customer.LastName}",
                 SellerId = invoice.SellerId,
-                Date = invoice.Date
+                SellerName = $"{invoice.Seller.FirstName} {invoice.Seller.LastName}",
+                Date = invoice.Date,
+                Total = (double)invoice.Total,
+                SalesCount = invoice.Sales?.Count ?? 0,
+                RepairsCount = invoice.Repairs?.Count ?? 0
             };
 
             return Ok(invoiceDTO);
         }
 
-        // POST: api/Invoice
         [HttpPost]
-        public IActionResult CreateInvoice([FromBody] InvoiceDTO invoiceDTO)
+        public async Task<IActionResult> CreateInvoice([FromBody] InvoiceDTO invoiceDTO)
         {
-            var invoicedb = new InvoiceModel
+            // Validar cliente
+            var customerExists = await _context.Customers.AnyAsync(c => c.CustomerId == invoiceDTO.CustomerId);
+            if (!customerExists)
+            {
+                return BadRequest($"El cliente con ID {invoiceDTO.CustomerId} no existe");
+            }
+
+            // Validar vendedor
+            var sellerExists = await _context.Sellers.AnyAsync(s => s.SellerId == invoiceDTO.SellerId);
+            if (!sellerExists)
+            {
+                return BadRequest($"El vendedor con ID {invoiceDTO.SellerId} no existe");
+            }
+
+            var invoice = new InvoiceModel
             {
                 CustomerId = invoiceDTO.CustomerId,
                 SellerId = invoiceDTO.SellerId,
-                Date = DateTime.Now
+                Date = DateTime.Now,
+                Total = (decimal)invoiceDTO.Total
             };
 
-            _aPIContex.Invoices.Add(invoicedb);
-            _aPIContex.SaveChanges();
+            _context.Invoices.Add(invoice);
+            await _context.SaveChangesAsync();
 
-            return Ok(invoiceDTO);
+            invoiceDTO.InvoiceId = invoice.InvoiceId;
+            invoiceDTO.Date = invoice.Date;
+            return CreatedAtAction(nameof(GetInvoiceById), new { id = invoice.InvoiceId }, invoiceDTO);
         }
 
-        // PUT: api/Invoice/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateInvoice(int id, [FromBody] InvoiceDTO invoiceDTO)
+        public async Task<IActionResult> UpdateInvoice(int id, [FromBody] InvoiceDTO invoiceDTO)
         {
-            var invoice = _aPIContex.Invoices.FirstOrDefault(i => i.InvoiceId == id);
+            var invoice = await _context.Invoices.FirstOrDefaultAsync(i => i.InvoiceId == id);
             if (invoice == null)
             {
                 return NotFound($"Factura con id {id} no encontrada");
+            }
+
+            // Validar cliente
+            var customerExists = await _context.Customers.AnyAsync(c => c.CustomerId == invoiceDTO.CustomerId);
+            if (!customerExists)
+            {
+                return BadRequest($"El cliente con ID {invoiceDTO.CustomerId} no existe");
+            }
+
+            // Validar vendedor
+            var sellerExists = await _context.Sellers.AnyAsync(s => s.SellerId == invoiceDTO.SellerId);
+            if (!sellerExists)
+            {
+                return BadRequest($"El vendedor con ID {invoiceDTO.SellerId} no existe");
             }
 
             invoice.CustomerId = invoiceDTO.CustomerId;
             invoice.SellerId = invoiceDTO.SellerId;
-            invoice.Date = invoiceDTO.Date;
+            invoice.Total = (decimal)invoiceDTO.Total;
 
-            _aPIContex.Invoices.Update(invoice);
-            _aPIContex.SaveChanges();
+            _context.Invoices.Update(invoice);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/Invoice/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteInvoice(int id)
+        public async Task<IActionResult> DeleteInvoice(int id)
         {
-            var invoice = _aPIContex.Invoices.FirstOrDefault(i => i.InvoiceId == id);
+            var invoice = await _context.Invoices
+                .Include(i => i.Sales)
+                .Include(i => i.Repairs)
+                .FirstOrDefaultAsync(i => i.InvoiceId == id);
+
             if (invoice == null)
             {
                 return NotFound($"Factura con id {id} no encontrada");
             }
 
-            _aPIContex.Invoices.Remove(invoice);
-            _aPIContex.SaveChanges();
+            // Las ventas y reparaciones asociadas tendrán su InvoiceId en NULL (SetNull)
+            _context.Invoices.Remove(invoice);
+            await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // Endpoint para calcular total automáticamente
+        [HttpGet("{id}/calculate-total")]
+        public async Task<IActionResult> CalculateInvoiceTotal(int id)
+        {
+            var invoice = await _context.Invoices
+                .Include(i => i.Sales)
+                    .ThenInclude(s => s.SaleDetails)
+                .Include(i => i.Repairs)
+                .FirstOrDefaultAsync(i => i.InvoiceId == id);
+
+            if (invoice == null)
+            {
+                return NotFound($"Factura con id {id} no encontrada");
+            }
+
+            // Calcular total de ventas
+            decimal salesTotal = invoice.Sales?
+                .SelectMany(s => s.SaleDetails)
+                .Sum(sd => sd.Subtotal) ?? 0;
+
+            // Calcular total de reparaciones
+            decimal repairsTotal = invoice.Repairs?
+                .Sum(r => r.Cost) ?? 0;
+
+            decimal grandTotal = salesTotal + repairsTotal;
+
+            // Actualizar total
+            invoice.Total = grandTotal;
+            _context.Invoices.Update(invoice);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                invoiceId = invoice.InvoiceId,
+                salesTotal = (double)salesTotal,
+                repairsTotal = (double)repairsTotal,
+                grandTotal = (double)grandTotal
+            });
         }
     }
 }

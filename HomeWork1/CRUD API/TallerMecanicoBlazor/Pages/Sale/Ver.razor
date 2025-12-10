@@ -1,0 +1,71 @@
+﻿@page "/sales"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SaleService SaleService
+@inject NavigationManager Nav
+
+<h3>Ventas</h3>
+
+<button class="btn btn-primary mb-3" @onclick='() => Nav.NavigateTo("/sales/create")'>
+    Nueva Venta
+</button>
+
+@if (sales == null)
+{
+    <p>Cargando ventas...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Vendedor</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Factura</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sale in sales)
+            {
+                <tr>
+                    <td>@sale.SaleId</td>
+                    <td>@sale.CustomerName</td>
+                    <td>@sale.SellerName</td>
+                    <td>@sale.Total</td>
+                    <td>@sale.Date.ToString("dd/MM/yyyy")</td>
+                    <td>@(sale.InvoiceId == null ? "—" : sale.InvoiceId)</td>
+
+                    <td>
+                        <button class="btn btn-info btn-sm"
+                                @onclick='() => Nav.NavigateTo($"/sales/details/{sale.SaleId}")'>
+                            Detalles
+                        </button>
+
+                        <button class="btn btn-warning btn-sm"
+                                @onclick='() => Nav.NavigateTo($"/sales/edit/{sale.SaleId}")'>
+                            Editar
+                        </button>
+
+                        <button class="btn btn-danger btn-sm"
+                                @onclick='() => Nav.NavigateTo($"/sales/delete/{sale.SaleId}")'>
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<SaleDTO> sales;
+
+    protected override async Task OnInitializedAsync()
+    {
+        sales = await SaleService.GetAllAsync();
+    }
+}

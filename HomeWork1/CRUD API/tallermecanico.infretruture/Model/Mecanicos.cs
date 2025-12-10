@@ -1,10 +1,8 @@
-﻿
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
 
 namespace tallermecanico.infretruture.Model
 {
-
     public class MechanicModel
     {
         [Key]
@@ -18,7 +16,7 @@ namespace tallermecanico.infretruture.Model
         [MaxLength(100)]
         public string Specialty { get; set; }
 
-        // Navegación: Un mecánico realiza múltiples reparaciones
+        // Navegación
         public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
 
         public MechanicModel() { }

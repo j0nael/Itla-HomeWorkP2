@@ -1,26 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
 using tallermecanico.infretruture.Model;
+
 namespace CRUD_API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class MechanicController : ControllerBase
     {
-        private readonly CrudAPIContex _aPIContex;
+        private readonly CrudAPIContex _context;
 
-        public MechanicController(CrudAPIContex aPIContex)
+        public MechanicController(CrudAPIContex context)
         {
-            _aPIContex = aPIContex;
+            _context = context;
         }
 
-        // GET: api/Mechanic
         [HttpGet]
-        public IActionResult GetAllMechanics()
+        public async Task<IActionResult> GetAllMechanics()
         {
-            var mechanics = _aPIContex.Mechanics.ToList();
-
+            var mechanics = await _context.Mechanics.ToListAsync();
             var list = mechanics.Select(m => new MechanicDTO
             {
                 MechanicId = m.MechanicId,
@@ -31,11 +31,10 @@ namespace CRUD_API.Controllers
             return Ok(list);
         }
 
-        // GET: api/Mechanic/{id}
         [HttpGet("{id}")]
-        public IActionResult GetMechanicById(int id)
+        public async Task<IActionResult> GetMechanicById(int id)
         {
-            var mechanic = _aPIContex.Mechanics.FirstOrDefault(m => m.MechanicId == id);
+            var mechanic = await _context.Mechanics.FirstOrDefaultAsync(m => m.MechanicId == id);
             if (mechanic == null)
             {
                 return NotFound($"Mecánico con id {id} no encontrado");
@@ -51,27 +50,36 @@ namespace CRUD_API.Controllers
             return Ok(mechanicDTO);
         }
 
-        // POST: api/Mechanic
         [HttpPost]
-        public IActionResult CreateMechanic([FromBody] MechanicDTO mechanicDTO)
+        public async Task<IActionResult> CreateMechanic([FromBody] MechanicDTO mechanicDTO)
         {
-            var mechanico = new MechanicModel
+            if (string.IsNullOrWhiteSpace(mechanicDTO.FirstName))
+            {
+                return BadRequest("El nombre es obligatorio");
+            }
+
+            if (string.IsNullOrWhiteSpace(mechanicDTO.Specialty))
+            {
+                return BadRequest("La especialidad es obligatoria");
+            }
+
+            var mechanic = new MechanicModel
             {
                 FirstName = mechanicDTO.FirstName,
                 Specialty = mechanicDTO.Specialty
             };
 
-            _aPIContex.Mechanics.Add(mechanico);
-            _aPIContex.SaveChanges();
+            _context.Mechanics.Add(mechanic);
+            await _context.SaveChangesAsync();
 
-            return Ok(mechanicDTO);
+            mechanicDTO.MechanicId = mechanic.MechanicId;
+            return CreatedAtAction(nameof(GetMechanicById), new { id = mechanic.MechanicId }, mechanicDTO);
         }
 
-        // PUT: api/Mechanic/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateMechanic(int id, [FromBody] MechanicDTO mechanicDTO)
+        public async Task<IActionResult> UpdateMechanic(int id, [FromBody] MechanicDTO mechanicDTO)
         {
-            var mechanic = _aPIContex.Mechanics.FirstOrDefault(m => m.MechanicId == id);
+            var mechanic = await _context.Mechanics.FirstOrDefaultAsync(m => m.MechanicId == id);
             if (mechanic == null)
             {
                 return NotFound($"Mecánico con id {id} no encontrado");
@@ -80,24 +88,32 @@ namespace CRUD_API.Controllers
             mechanic.FirstName = mechanicDTO.FirstName;
             mechanic.Specialty = mechanicDTO.Specialty;
 
-            _aPIContex.Mechanics.Update(mechanic);
-            _aPIContex.SaveChanges();
+            _context.Mechanics.Update(mechanic);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/Mechanic/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteMechanic(int id)
+        public async Task<IActionResult> DeleteMechanic(int id)
         {
-            var mechanic = _aPIContex.Mechanics.FirstOrDefault(m => m.MechanicId == id);
+            var mechanic = await _context.Mechanics
+                .Include(m => m.Repairs)
+                .FirstOrDefaultAsync(m => m.MechanicId == id);
+
             if (mechanic == null)
             {
                 return NotFound($"Mecánico con id {id} no encontrado");
             }
 
-            _aPIContex.Mechanics.Remove(mechanic);
-            _aPIContex.SaveChanges();
+            // Verificar si tiene reparaciones
+            if (mechanic.Repairs != null && mechanic.Repairs.Any())
+            {
+                return BadRequest($"No se puede eliminar el mecánico porque tiene {mechanic.Repairs.Count} reparación(es) asociada(s)");
+            }
+
+            _context.Mechanics.Remove(mechanic);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }

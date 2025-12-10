@@ -1,0 +1,50 @@
+﻿@page "/mechanics/edit/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject MechanicService MechanicService
+@inject NavigationManager Nav
+
+<h3>Editar Mecánico</h3>
+
+@if (mechanic == null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <EditForm Model="mechanic" OnValidSubmit="Save">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label>Nombre:</label>
+            <InputText class="form-control" @bind-Value="mechanic.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label>Especialidad:</label>
+            <InputText class="form-control" @bind-Value="mechanic.Specialty" />
+        </div>
+
+        <button class="btn btn-primary" type="submit">Guardar Cambios</button>
+        <button class="btn btn-secondary" type="button" @onclick="Cancel">Cancelar</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+    MechanicDTO? mechanic;
+
+    protected override async Task OnInitializedAsync()
+    {
+        mechanic = await MechanicService.GetByIdAsync(id);
+    }
+
+    async Task Save()
+    {
+        await MechanicService.UpdateAsync(id, mechanic);
+        Nav.NavigateTo("/mechanics");
+    }
+
+    void Cancel() => Nav.NavigateTo("/mechanics");
+}

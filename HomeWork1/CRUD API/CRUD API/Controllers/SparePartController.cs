@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using tallermecanico.domain.Entityes;
+using Microsoft.EntityFrameworkCore;
 using tallermecanico.infretruture.DBContex;
 using tallermecanico.aplication.DTOs;
 using tallermecanico.infretruture.Model;
@@ -10,37 +10,35 @@ namespace CRUD_API.Controllers
     [Route("api/[controller]")]
     public class SparePartController : ControllerBase
     {
-        private readonly CrudAPIContex _aPIContex;
+        private readonly CrudAPIContex _context;
 
-        public SparePartController(CrudAPIContex aPIContex)
+        public SparePartController(CrudAPIContex context)
         {
-            _aPIContex = aPIContex;
+            _context = context;
         }
 
-        // GET: api/SparePart
         [HttpGet]
-        public IActionResult GetAllSpareParts()
+        public async Task<IActionResult> GetAllSpareParts()
         {
-            var spareParts = _aPIContex.SpareParts.ToList();
-
-            var list = spareParts.Select(s => new SparePartDTO
+            var spareParts = await _context.SpareParts.ToListAsync();
+            var list = spareParts.Select(sp => new SparePartDTO
             {
-                SparePartId = s.SparePartId,
-                Name = s.Name,
-                InitialQuantity = s.InitialQuantity,
-                Quantity = s.Quantity,
-               
-                EntryDate = s.EntryDate
+                SparePartId = sp.SparePartId,
+                Name = sp.Name,
+                InitialQuantity = sp.InitialQuantity,
+                Quantity = sp.Quantity,
+                UnitPrice = sp.UnitPrice,
+                WholesalePrice = (double)sp.WholesalePrice,
+                EntryDate = sp.EntryDate
             }).ToList();
 
             return Ok(list);
         }
 
-        // GET: api/SparePart/{id}
         [HttpGet("{id}")]
-        public IActionResult GetSparePartById(int id)
+        public async Task<IActionResult> GetSparePartById(int id)
         {
-            var sparePart = _aPIContex.SpareParts.FirstOrDefault(s => s.SparePartId == id);
+            var sparePart = await _context.SpareParts.FirstOrDefaultAsync(sp => sp.SparePartId == id);
             if (sparePart == null)
             {
                 return NotFound($"Repuesto con id {id} no encontrado");
@@ -52,68 +50,119 @@ namespace CRUD_API.Controllers
                 Name = sparePart.Name,
                 InitialQuantity = sparePart.InitialQuantity,
                 Quantity = sparePart.Quantity,
-              
+                UnitPrice =sparePart.UnitPrice,
+                WholesalePrice = (double)sparePart.WholesalePrice,
                 EntryDate = sparePart.EntryDate
             };
 
             return Ok(sparePartDTO);
         }
 
-        // POST: api/SparePart
         [HttpPost]
-        public IActionResult CreateSparePart([FromBody] SparePartDTO sparePartDTO)
+        public async Task<IActionResult> CreateSparePart([FromBody] SparePartDTO sparePartDTO)
         {
+            if (string.IsNullOrWhiteSpace(sparePartDTO.Name))
+            {
+                return BadRequest("El nombre del repuesto es obligatorio");
+            }
+
+            if (sparePartDTO.Quantity < 0)
+            {
+                return BadRequest("La cantidad no puede ser negativa");
+            }
+
+            if (sparePartDTO.UnitPrice <= 0)
+            {
+                return BadRequest("El precio unitario debe ser mayor a 0");
+            }
+
             var sparePart = new SparePartModel
             {
                 Name = sparePartDTO.Name,
                 InitialQuantity = sparePartDTO.Quantity,
                 Quantity = sparePartDTO.Quantity,
-               
+                UnitPrice = (decimal)sparePartDTO.UnitPrice,
+                WholesalePrice = (decimal)sparePartDTO.WholesalePrice,
                 EntryDate = DateTime.Now
             };
 
-            _aPIContex.SpareParts.Add(sparePart);
-            _aPIContex.SaveChanges();
+            _context.SpareParts.Add(sparePart);
+            await _context.SaveChangesAsync();
 
-            return Ok(sparePartDTO);
+            sparePartDTO.SparePartId = sparePart.SparePartId;
+            sparePartDTO.EntryDate = sparePart.EntryDate;
+            return CreatedAtAction(nameof(GetSparePartById), new { id = sparePart.SparePartId }, sparePartDTO);
         }
 
-        // PUT: api/SparePart/{id}
         [HttpPut("{id}")]
-        public IActionResult UpdateSparePart(int id, [FromBody] SparePartDTO sparePartDTO)
+        public async Task<IActionResult> UpdateSparePart(int id, [FromBody] SparePartDTO sparePartDTO)
         {
-            var sparePart = _aPIContex.SpareParts.FirstOrDefault(s => s.SparePartId == id);
+            var sparePart = await _context.SpareParts.FirstOrDefaultAsync(sp => sp.SparePartId == id);
             if (sparePart == null)
             {
                 return NotFound($"Repuesto con id {id} no encontrado");
+            }
+
+            if (sparePartDTO.Quantity < 0)
+            {
+                return BadRequest("La cantidad no puede ser negativa");
             }
 
             sparePart.Name = sparePartDTO.Name;
-            sparePart.InitialQuantity = sparePartDTO.InitialQuantity;
             sparePart.Quantity = sparePartDTO.Quantity;
-         
-            sparePart.EntryDate = sparePartDTO.EntryDate;
+            sparePart.UnitPrice = (decimal)sparePartDTO.UnitPrice;
+            sparePart.WholesalePrice = (decimal)sparePartDTO.WholesalePrice;
 
-            _aPIContex.SpareParts.Update(sparePart);
-            _aPIContex.SaveChanges();
+            _context.SpareParts.Update(sparePart);
+            await _context.SaveChangesAsync();
 
             return NoContent();
         }
 
-        // DELETE: api/SparePart/{id}
         [HttpDelete("{id}")]
-        public IActionResult DeleteSparePart(int id)
+        public async Task<IActionResult> DeleteSparePart(int id)
         {
-            var sparePart = _aPIContex.SpareParts.FirstOrDefault(s => s.SparePartId == id);
+            var sparePart = await _context.SpareParts
+                .Include(sp => sp.SaleDetails)
+                .FirstOrDefaultAsync(sp => sp.SparePartId == id);
+
             if (sparePart == null)
             {
                 return NotFound($"Repuesto con id {id} no encontrado");
             }
 
-            _aPIContex.SpareParts.Remove(sparePart);
-            _aPIContex.SaveChanges();
+            // Verificar si está en uso
+            if (sparePart.SaleDetails != null && sparePart.SaleDetails.Any())
+            {
+                return BadRequest($"No se puede eliminar el repuesto porque está en {sparePart.SaleDetails.Count} venta(s)");
+            }
+
+            _context.SpareParts.Remove(sparePart);
+            await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // Endpoint adicional para agregar stock
+        [HttpPost("{id}/add-stock")]
+        public async Task<IActionResult> AddStock(int id, [FromBody] int quantity)
+        {
+            var sparePart = await _context.SpareParts.FirstOrDefaultAsync(sp => sp.SparePartId == id);
+            if (sparePart == null)
+            {
+                return NotFound($"Repuesto con id {id} no encontrado");
+            }
+
+            if (quantity <= 0)
+            {
+                return BadRequest("La cantidad debe ser mayor a 0");
+            }
+
+            sparePart.Quantity += quantity;
+            _context.SpareParts.Update(sparePart);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = $"Stock actualizado. Cantidad actual: {sparePart.Quantity}" });
         }
     }
 }

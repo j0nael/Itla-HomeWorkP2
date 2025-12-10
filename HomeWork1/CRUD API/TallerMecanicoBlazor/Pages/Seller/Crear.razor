@@ -1,0 +1,47 @@
+﻿@page "/sellers/create"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SellerService SellerService
+@inject NavigationManager Nav
+
+<h3>Nuevo Vendedor</h3>
+
+<EditForm Model="seller" OnValidSubmit="Save">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label>Nombre:</label>
+        <InputText class="form-control" @bind-Value="seller.FirstName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Apellido:</label>
+        <InputText class="form-control" @bind-Value="seller.LastName" />
+    </div>
+
+    <div class="mb-3">
+        <label>Email:</label>
+        <InputText class="form-control" @bind-Value="seller.Email" />
+    </div>
+
+    <div class="mb-3">
+        <label>Teléfono:</label>
+        <InputText class="form-control" @bind-Value="seller.PhoneNumber" />
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancelar</button>
+</EditForm>
+
+@code {
+    SellerDTO seller = new();
+
+    async Task Save()
+    {
+        await SellerService.CreateAsync(seller);
+        Nav.NavigateTo("/sellers");
+    }
+
+    void Cancel() => Nav.NavigateTo("/sellers");
+}

@@ -1,0 +1,25 @@
+﻿@page "/mechanics/delete/{id:int}"
+@using TallerMecanicoBlazor.Frontend
+@inject MechanicService MechanicService
+@inject NavigationManager Nav
+
+<h3>Eliminar Mecánico</h3>
+
+<div class="alert alert-warning">
+    <p>¿Seguro que deseas eliminar este mecánico?</p>
+</div>
+
+<button class="btn btn-danger" @onclick="Delete">Sí, eliminar</button>
+<button class="btn btn-secondary" @onclick="Cancel">Cancelar</button>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    async Task Delete()
+    {
+        await MechanicService.DeleteAsync(id);
+        Nav.NavigateTo("/mechanics");
+    }
+
+    void Cancel() => Nav.NavigateTo("/mechanics");
+}

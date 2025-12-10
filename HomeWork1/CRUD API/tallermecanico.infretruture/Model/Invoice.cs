@@ -5,20 +5,19 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace tallermecanico.infretruture.Model
 {
-
     public class InvoiceModel
     {
         [Key]
         public int InvoiceId { get; set; }
 
-        // FK: Una factura pertenece a un cliente
+        // FK: Factura pertenece a un cliente
         [Required]
         public int CustomerId { get; set; }
 
         [ForeignKey(nameof(CustomerId))]
         public virtual CustomerModel Customer { get; set; }
 
-        // FK: Una factura es generada por un vendedor
+        // FK: Factura generada por un vendedor
         [Required]
         public int SellerId { get; set; }
 
@@ -30,10 +29,8 @@ namespace tallermecanico.infretruture.Model
         [Column(TypeName = "decimal(18,2)")]
         public decimal Total { get; set; }
 
-        // Navegación: Una factura incluye múltiples ventas
+        // Navegación
         public virtual ICollection<SaleModel> Sales { get; set; } = new List<SaleModel>();
-
-        // Navegación: Una factura incluye múltiples reparaciones
         public virtual ICollection<RepairModel> Repairs { get; set; } = new List<RepairModel>();
 
         public InvoiceModel() { }

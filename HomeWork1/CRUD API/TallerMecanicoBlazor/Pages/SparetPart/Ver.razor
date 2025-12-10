@@ -1,0 +1,70 @@
+﻿@page "/spareparts"
+@using TallerMecanicoBlazor.Frontend
+@using tallermecanico.aplication.DTOs
+@inject SparePartService SparePartService
+@inject NavigationManager Nav
+
+<h3>Repuestos</h3>
+<button class="btn btn-primary mb-3" @onclick="Create">Nuevo Repuesto</button>
+
+@if (spareParts == null)
+{
+    <p>Cargando repuestos...</p>
+}
+else
+{
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Cantidad Inicial</th>
+                <th>Cantidad Disponible</th>
+                <th>Precio Unitario</th>
+                <th>Precio Mayorista</th>
+                <th>Fecha de Entrada</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sp in spareParts)
+            {
+                <tr>
+                    <td>@sp.SparePartId</td>
+                    <td>@sp.Name</td>
+                    <td>@sp.InitialQuantity</td>
+                    <td>@sp.Quantity</td>
+                    <td>@sp.UnitPrice.ToString("C")</td>
+                    <td>@sp.WholesalePrice.ToString("C")</td>
+                    <td>@sp.EntryDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm me-1" @onclick="() => Edit(sp.SparePartId)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(sp.SparePartId)">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<SparePartDTO> spareParts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        spareParts = await SparePartService.GetAllAsync();
+    }
+
+    void Create() => Nav.NavigateTo("/spareparts/create");
+    void Edit(int id) => Nav.NavigateTo($"/spareparts/edit/{id}");
+
+    async Task Delete(int id)
+    {
+        bool confirmed = true; // Puedes reemplazar con modal de confirmación
+        if (confirmed)
+        {
+            await SparePartService.DeleteAsync(id);
+            spareParts = await SparePartService.GetAllAsync();
+        }
+    }
+}

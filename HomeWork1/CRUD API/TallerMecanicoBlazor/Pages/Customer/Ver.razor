@@ -33,13 +33,13 @@ else
             @foreach (var c in customers)
             {
                 <tr>
-                    <td>@c.Id</td>
+                    <td>@c.CustomerId</td>
                     <td>@c.FirstName @c.LastName</td>
                     <td>@c.Email</td>
                     <td>@c.PhoneNumber</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" @onclick="() => Edit(c.Id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(c.Id)">Eliminar</button>
+                        <button class="btn btn-warning btn-sm" @onclick="() => Edit(c.CustomerId)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => Delete(c.CustomerId)">Eliminar</button>
                     </td>
                 </tr>
             }

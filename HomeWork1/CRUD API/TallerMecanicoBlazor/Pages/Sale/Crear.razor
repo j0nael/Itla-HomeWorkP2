@@ -1,16 +1,17 @@
 ﻿@page "/sales/create"
 @using TallerMecanicoBlazor.Frontend
 @using tallermecanico.aplication.DTOs
-
 @inject SaleService SaleService
 @inject CustomerService CustomerService
 @inject SellerService SellerService
+@inject SparePartService SparePartService
 @inject NavigationManager Nav
 
 <h3>Nueva Venta</h3>
 
 <div class="card p-4">
 
+    <!-- Cliente -->
     <div class="mb-3">
         <label>Cliente</label>
         <select class="form-select" @bind="sale.CustomerId">
@@ -22,6 +23,7 @@
         </select>
     </div>
 
+    <!-- Vendedor -->
     <div class="mb-3">
         <label>Vendedor</label>
         <select class="form-select" @bind="sale.SellerId">
@@ -33,27 +35,115 @@
         </select>
     </div>
 
-    <button class="btn btn-success" @onclick="CreateSale">
-        Guardar
-    </button>
+    <!-- Detalles de venta -->
+    <h5>Detalles de la Venta</h5>
+    @foreach (var detail in sale.SaleDetails)
+    {
+        <div class="row mb-2 align-items-end">
+            <div class="col">
+                <label>Repuesto</label>
+                <select class="form-select"
+                        @onchange="e => OnSparePartSelected(detail, e)">
+                    <option value="">Seleccione un repuesto</option>
+                    @foreach (var sp in spareParts)
+                    {
+                        <option value="@sp.SparePartId">@sp.Name</option>
+                    }
+                </select>
+            </div>
+
+            <div class="col">
+                <label>Cantidad</label>
+                <input type="number" class="form-control" min="1"
+                       value="@detail.Quantity"
+                       @oninput="e => OnQuantityChanged(detail, e)" />
+            </div>
+
+            <div class="col">
+                <label>Precio Unitario</label>
+                <input type="number" class="form-control"
+                       value="@detail.UnitPrice" disabled />
+            </div>
+
+            <div class="col">
+                <label>Subtotal</label>
+                <input type="number" class="form-control"
+                       value="@detail.Subtotal" disabled />
+            </div>
+
+            <div class="col-auto">
+                <button class="btn btn-danger" @onclick="() => RemoveDetail(detail)">X</button>
+            </div>
+        </div>
+    }
+
+    <button class="btn btn-secondary mb-3" @onclick="AddDetail">Agregar Repuesto</button>
+
+    <div class="mb-3">
+        <label>Total:</label>
+        <input type="number" class="form-control" value="@sale.Total" disabled />
+    </div>
+
+    <button class="btn btn-success" @onclick="CreateSale">Guardar Venta</button>
 </div>
 
 @code {
     SaleDTO sale = new();
     List<CustomerDTO> customers = new();
     List<SellerDTO> sellers = new();
+    List<SparePartDTO> spareParts = new();
 
     protected override async Task OnInitializedAsync()
     {
         customers = await CustomerService.GetAll();
         sellers = await SellerService.GetAllAsync();
+        spareParts = await SparePartService.GetAllAsync();
+    }
+
+    void AddDetail()
+    {
+        sale.SaleDetails.Add(new SaleDetailDTO { Quantity = 1 });
+        UpdateTotal();
+    }
+
+    void RemoveDetail(SaleDetailDTO detail)
+    {
+        sale.SaleDetails.Remove(detail);
+        UpdateTotal();
+    }
+
+    void OnSparePartSelected(SaleDetailDTO detail, ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int sparePartId))
+        {
+            detail.SparePartId = sparePartId;
+            var sp = spareParts.FirstOrDefault(x => x.SparePartId == sparePartId);
+            if (sp != null)
+            {
+                detail.UnitPrice = sp.UnitPrice;
+                detail.SparePartName = sp.Name;
+                UpdateTotal();
+            }
+        }
+    }
+
+    void OnQuantityChanged(SaleDetailDTO detail, ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int qty))
+        {
+            detail.Quantity = qty;
+            UpdateTotal();
+        }
+    }
+
+    void UpdateTotal()
+    {
+        sale.Total = sale.SaleDetails.Sum(d => d.Subtotal);
     }
 
     async Task CreateSale()
     {
-        sale.Total = 0;
-        sale.InvoiceId = null;
-
+        sale.Date = DateTime.Now;
         await SaleService.CreateAsync(sale);
         Nav.NavigateTo("/sales");
     }
